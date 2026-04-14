@@ -38,16 +38,32 @@
 }
 
 .notificationIcon{
-    border-right: 3px solid #5C308D;
-    height: 50px;
-    color: rgb(142, 141, 139);
-    font-weight: bold;
-    /* padding-right: 0.4rem; */
+    color: rgb(82, 82, 82);
+    font-weight: bolder;
+
 }
-.profile-dropdown{
+.profile-divider {
+    width: 2px;
+    height: 46px;
+    background-color: #838080;
+    margin: 0 4px;
+}
+.profile-info-row {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 10px;
+}
+.profile-avatar {
+    background: #dfd6eb;
+    padding: 6px;
+    border-radius: 50%;
+    color: #5C308D;
+    flex-shrink: 0;
+}
+.profile-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
 }
 header {
     position: -webkit-sticky;
@@ -59,7 +75,6 @@ header {
 .header_nav {
      background: #F8F8F8;
     padding: 1rem;
-    height: 80px;
 }
 .header_search {
     position: relative;

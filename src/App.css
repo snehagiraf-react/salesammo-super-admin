@@ -32,7 +32,14 @@ label, span{
 P, textarea, input{
   font-size: clamp(0.8rem, 2vw, 1rem);
   font-weight: 500;
+  /* width: stretch; */
+}
+
+.form-group {
+  input{
   width: stretch;
+
+  }
 }
 
 h1,h2, h3,h4, label, span, p, button, input, select, textarea {

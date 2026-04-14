@@ -1,14 +1,14 @@
 import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import "./DashboardPage.css";
-// import UserActivityChart from "../../components/common/activeUserLineChart";
-// import ShareAnalyticsChart from "../../components/common/analyticsBarChart";
-// import Cards from "../../components/common/cards";
+import { useNavigate, useLocation } from "react-router-dom";
+import RevenueLineChart from "../../components/common/revenueLineChart";
+import CompanyBarChart from "../../components/common/companyBarChart";
+import Cards from "../../components/common/cards";
 import { getPageTitle } from "../../utils/getPageTitle";
-// import RecentActivity from "../../components/common/recentActivity";
+import RecentActivity from "../../components/common/recentActivity";
 
 export default function DashboardPage() {
-  const location = useLocation();
+    const location = useLocation();
   //   const navigate = useNavigate();
   //   const handleLogout = () => {
   //     localStorage.removeItem('token');
@@ -18,19 +18,17 @@ export default function DashboardPage() {
 
   return (
     <>
-      {/* <h1 className="page-title">{getPageTitle(location.pathname)}</h1> */}
-      <p style={{ color: "rgb(85, 85, 85)", fontSize: "13px" }}>
-        Welcome back! Here’s what’s happening with your platform
-      </p>
-      {/* <Cards /> */}
+      <h1 className="page-title">{getPageTitle(location.pathname)}</h1>
+     
+      <Cards />
       <div className="dashboard-content">
      
-        {/* <UserActivityChart />
-        <ShareAnalyticsChart /> */}
+        <RevenueLineChart />
+        <CompanyBarChart />
         {/* <UsersPieChart /> */}
       </div>
 
-      {/* <RecentActivity /> */}
+      <RecentActivity />
     </>
   );
 }

@@ -1,0 +1,17 @@
+.companies-page{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.products-search-container{
+    input{
+        padding: 13px;
+        border: 1px solid #ece8f5;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+}

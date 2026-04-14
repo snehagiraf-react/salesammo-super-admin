@@ -4,8 +4,9 @@ import { Toaster } from 'react-hot-toast';
 import DashboardPage from './features/dashboard/DashboardPage';
 import Sidebar from './components/layout/Sidebar';
 import Header from './components/layout/Header';
-import ProtectedRoute from './features/auth/ProtectedRoute';
-import { AuthProvider } from './features/auth/AuthProvider';
+import Companies from './features/company/Companies';
+import PackagesData from './features/packages/Packages';
+import Revenue from './features/revenue/Revenue';
 
 import './App.css';
 
@@ -45,7 +46,7 @@ const MainLayout = () => {
   }, []);
 
   return (
-    <ProtectedRoute>
+    <>
       {/* SIDEBAR */}
       <Sidebar
         isOpen={sidebarOpen}
@@ -67,12 +68,15 @@ const MainLayout = () => {
         <main className="main-content">
           <Routes>
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/companies" element={<Companies />} />
+            <Route path="/packages" element={<PackagesData />} />
+            <Route path="/revenue" element={<Revenue />} />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             
           </Routes>
         </main>
       </div>
-    </ProtectedRoute>
+    </>
   );
 };
 
@@ -81,8 +85,7 @@ const MainLayout = () => {
 ========================= */
 export default function App() {
   return (
-    <AuthProvider>
-
+    <>
       <Toaster
         position="top-right"
         toastOptions={{
@@ -96,6 +99,6 @@ export default function App() {
           <Route path="/*" element={<MainLayout />} />
         </Routes>
       </div>
-    </AuthProvider>
+    </>
   );
 }

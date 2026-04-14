@@ -1,0 +1,251 @@
+/* center page content */
+/* .App {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+} */
+
+.package-form-row{
+  label{
+    display: block;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #0a0a0a;
+    font-weight: 600;
+    text-align: left;
+  }
+}
+
+/* open button */
+.open-btn {
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+/* overlay background */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+/* modal box */
+.modal {
+  background: white;
+  padding: 25px 30px;
+  border-radius: 8px;
+  width: fit-content;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Large modal for edit forms */
+.modal:has(.modal-form) {
+  width: 800px;
+  max-width: 95vw;
+  text-align: left;
+}
+
+/* Modal form specific styles */
+.modal-form {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.modal-form .form-section {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+}
+
+.modal-form .form-section h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+  border-bottom: 1px solid #BA7953;
+  padding-bottom: 5px;
+}
+
+.modal-form .form-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.modal-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.modal-form .form-group label {
+  font-weight: 500;
+  color: #333;
+  font-size: 13px;
+}
+
+.modal-form .form-group input {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.modal-form .form-group input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
+}
+
+.modal-form .form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.modal-form .profile-image-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.modal-form .current-image img {
+  border-radius: 50%;
+  border: 2px solid #ddd;
+}
+
+/* Package Modal Form Styles */
+.package-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+/* Responsive modal */
+@media (max-width: 768px) {
+  .modal {
+    padding: 20px 15px;
+  }
+
+  .modal:has(.modal-form) {
+    width: 95vw;
+    padding: 15px;
+  }
+  
+  .modal-form .form-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .modal-form .profile-image-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Package Modal Responsive */
+  .package-form-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}
+
+/* close button */
+.close-btn {
+  margin-top: 15px;
+  padding: 8px 15px;
+}
+
+/* fade animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Image Modal Styles */
+.modal-image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 10px;
+}
+
+.modal-full-image {
+  max-width: 100%;
+  max-height: 60vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  width: 100%;
+}
+
+.delete-button {
+  padding: 10px 20px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+}
+
+.modal:has(.modal-image-container) {
+  width: 600px;
+  max-width: 95vw;
+}
+
+@media (max-width: 768px) {
+  .modal:has(.modal-image-container) {
+    width: 95vw;
+  }
+  
+  .modal-full-image {
+    max-height: 50vh;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+  
+  /* .delete-button, .edit-button {
+    width: 20%;
+  } */
+}

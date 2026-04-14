@@ -6,15 +6,10 @@ import { AuthContext } from "../../features/auth/AuthProvider";
 
 import {
   LayoutDashboard,
-  Users,
-  Podcast,
-  Folders,
-  PackageSearch,
-  Factory,
-  Pyramid,
-  Tags,
-  FileUser,
-  ChartNoAxesCombined ,
+  Building2,
+  PackageOpen ,
+  DollarSign ,
+  ChartSpline ,
   Settings,
   LogOut 
 } from "lucide-react";
@@ -26,15 +21,10 @@ export default function Sidebar({ isOpen, closeSidebar }) {
   const menuItems = useMemo(
     () => [
       { path: "/dashboard", label: "Dashboard" },
-      { path: "/users", label: "Users" },
-      { path: "/subscription", label: "Subscription" },
-      { path: "/categories", label: "Categories" },
-      { path: "/products", label: "Products" },
-      { path: "/industries", label: "Industries" },
-      { path: "/clients", label: "Clients" },
-      { path: "/tags", label: "Tags" },
-      { path: "/applicationImages", label: "Application Images" },
-      { path: "/analytics", label: "Analytics" },
+      { path: "/companies", label: "Companies" },
+      { path: "/packages", label: "Packages" },
+      { path: "/revenue", label: "Revenue" },
+      { path: "/activity-log", label: "Activity Log" },
       { path: "/settings", label: "Settings" },
     ],
     [],
@@ -106,24 +96,14 @@ export default function Sidebar({ isOpen, closeSidebar }) {
     switch (label) {
       case "Dashboard":
         return <LayoutDashboard size={20}/>;
-      case "Users":
-        return <Users size={20}/>;
-      case "Subscription":
-        return <Podcast size={20}/>;
-      case "Categories":
-        return <Folders size={20}/>;
-      case "Products":
-        return <PackageSearch size={20}/>;
-      case "Industries":
-        return <Factory size={20}/>;
-      case "Clients":
-        return <FileUser size={20}/>;
-      case "Tags":
-        return <Tags size={20}/>;
-      case "Application Images":
-        return <Pyramid size={20}/>;
-      case "Analytics":
-        return <ChartNoAxesCombined size={20}/>;
+      case "Companies":
+        return <Building2 size={20}/>;
+      case "Packages":
+        return <PackageOpen  size={20}/>;
+      case "Revenue":
+        return <DollarSign  size={20}/>;
+      case "Activity Log":
+        return <ChartSpline  size={20}/>;
       case "Settings":
         return <Settings size={20}/>;
       default:
