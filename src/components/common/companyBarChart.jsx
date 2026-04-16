@@ -1,3 +1,4 @@
+import React from "react";
 import {
   BarChart,
   Bar,
@@ -5,49 +6,68 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from "recharts";
 import "../../assets/styles/chart.css";
 
-const defaultData = [
-  { name: "Mon", value: 2000 },
-  { name: "Tue", value: 3000 },
-  { name: "Wed", value: 2100 },
-  { name: "Thu", value: 3600 },
-  { name: "Fri", value: 2500 },
-  { name: "Sat", value: 3200 },
-  { name: "Sun", value: 2600 },
-];
+const BarChartComponent = ({
+  data = [],
+  dataKey = "value",
+  xKey = "name",
+  title = "Chart",
+  subtitle = "",
+  barColor = "#5C308D",
+  layout = "vertical", // 👈 NEW PROP
+}) => {
+  const isHorizontal = layout === "horizontal";
 
-export default function CompanyBarChart({
-  data = defaultData,
-  title = "Company Growth",
-  subtitle = "Monthly company growth trends",
-  fill = "#5B2C83",
-  xDataKey = "name",
-  barDataKey = "value",
-}) {
+  const chartHeight = isHorizontal
+    ? Math.max(data.length * 60, 300)
+    : 300;
+
   return (
-    <div className="chart-card">
-      <h3>{title}</h3>
-      <p className="subtitle">{subtitle}</p>
-
-      <div className="chart-container">
-        <ResponsiveContainer width="100%" minWidth={300} height={280}>
-          <BarChart data={data}>
-            <CartesianGrid stroke="#ccc" strokeDasharray="3 3" opacity={0.3} />
-            <XAxis dataKey={xDataKey} />
-            <YAxis />
-            <Tooltip />
-            <Bar
-              dataKey={barDataKey}
-              fill={fill}
-              radius={[8, 8, 0, 0]}
-              barSize={40}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+    <div className="line-chart-card">
+      <div>
+        <h3 className="chart-title">{title}</h3>
+        {subtitle && <p className="chart-subtitle">{subtitle}</p>}
       </div>
+
+      <ResponsiveContainer width="100%" height={chartHeight}>
+        <BarChart
+          data={data}
+          layout={isHorizontal ? "vertical" : "horizontal"}
+          margin={{ top: 10, right: 30, left: 10, bottom: 10 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+
+          {isHorizontal ? (
+            <>
+              <XAxis type="number" />
+              <YAxis dataKey={xKey} type="category" width={120} />
+            </>
+          ) : (
+            <>
+              <XAxis dataKey={xKey} />
+              <YAxis />
+            </>
+          )}
+
+          <Tooltip />
+
+          <Bar
+            dataKey={dataKey}
+            fill={barColor}
+            radius={
+              isHorizontal
+                ? [0, 6, 6, 0] // 👈 rounded right side
+                : [6, 6, 0, 0] // 👈 rounded top
+            }
+            barSize={isHorizontal ? 40 : 40}
+          />
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
-}
+};
+
+export default BarChartComponent;

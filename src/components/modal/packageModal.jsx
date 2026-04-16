@@ -1,6 +1,6 @@
 import React from 'react'
 import { Trash2 } from "lucide-react";
-import Modal from "./modal";
+import Modal from "../common/modal";
 import '../../assets/styles/modal.css';
 
 const PackageModal = ({isOpen, onClose, formData, setFormData, mode = "edit"}) => {

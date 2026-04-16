@@ -37,8 +37,14 @@
   margin-top: 30px;
   display: grid;
   gap: 20px;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  max-width: 100%;
+  grid-template-columns: repeat(2, 1fr); /* 2 equal columns */
+  max-width: 100%;  overflow: visible; /* allow chart scroll but not grid overflow */}
+
+/* Tablet and below - stack charts */
+@media (max-width: 968px) {
+  .dashboard-content {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 480px) {

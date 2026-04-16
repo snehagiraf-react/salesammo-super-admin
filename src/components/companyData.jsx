@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from "react";
 import { Eye } from "lucide-react";
+import CompanyModal from "./modal/companyModal";
 import "../../src/assets/styles/button.css";
 
 const companyData = [
@@ -56,9 +57,28 @@ const companyData = [
 
 const CompanyData = () => {
   const [company] = useState(companyData);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState(null);
+  const [actionType, setActionType] = useState('');
+  const [reason, setReason] = useState('');
 
-  const handleAction = (action, companyId) => {
-    console.log(`${action} company ${companyId}`);
+  const handleAction = (action, companyId, companyName) => {
+    if (action === "Disable" || action === "Enable") {
+      const companyInfo = company.find(c => c.id === companyId);
+      setSelectedCompany(companyInfo);
+      setActionType(action);
+      setReason('');
+      setIsModalOpen(true);
+    } else {
+      console.log(`${action} company ${companyId}`);
+    }
+  };
+
+  const handleConfirmAction = () => {
+    console.log(`${actionType} company ${selectedCompany.id} with reason: ${reason}`);
+    setIsModalOpen(false);
+    setReason('');
+    setSelectedCompany(null);
   };
 
   const getStatusBadgeClass = (status) => {
@@ -106,12 +126,12 @@ const CompanyData = () => {
                 {/* ACTIONS */}
                 <td>
                   <div className="actions-container">
-                    <button className="action-icon-btn" onClick={() => handleAction("View", company.id)}>
+                    <button className="action-icon-btn" onClick={() => handleAction("View", company.id, company.name)}>
                       <Eye size={18} />
                     </button>
                     <button 
                       className={company.status === "ACTIVE" ? "action-btn-disable" : "action-btn-enable"}
-                      onClick={() => handleAction(company.status === "ACTIVE" ? "Disable" : "Enable", company.id)}
+                      onClick={() => handleAction(company.status === "ACTIVE" ? "Disable" : "Enable", company.id, company.name)}
                     >
                       {company.status === "ACTIVE" ? "DISABLE" : "ENABLED"}
                     </button>
@@ -122,6 +142,20 @@ const CompanyData = () => {
           </tbody>
         </table>
       </div>
+
+      <CompanyModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setReason('');
+          setSelectedCompany(null);
+        }}
+        company={selectedCompany}
+        actionType={actionType}
+        reason={reason}
+        setReason={setReason}
+        onConfirm={handleConfirmAction}
+      />
     </>
   )
 }

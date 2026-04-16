@@ -1,220 +1,92 @@
-.chart-card {
-  background: #f8f9fb;
+.line-chart-card {
+  background: #ffffff;
   padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  width: 100%;
-  box-sizing: border-box;
-  min-width: 0;
+  border-radius: 12px;
+  overflow: hidden; /* contain the scroll within the card */
+  max-width: 100%; /* prevent overflow from parent grid */
+  position: relative; /* create containing block */
+  margin-top: 20px;
 }
 
+/* 👇 scroll container */
+.chart-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+  scroll-behavior: smooth;
+  cursor: grab;
+  touch-action: pan-x; /* allow horizontal panning on touch devices */
+  position: relative;
+}
+
+.chart-scroll:active {
+  cursor: grabbing;
+}
+
+/* Prevent SVG from blocking touch events */
+.chart-scroll svg {
+  pointer-events: none;
+}
+
+.chart-scroll .recharts-surface {
+  touch-action: none;
+}
+
+/* 👇 this MUST be inline-block */
+.chart-container {
+  display: inline-block;
+  min-width: 600px;
+  max-width: none; /* prevent shrinking */
+}
+
+/* Ensure chart SVG doesn't shrink */
+.chart-container .recharts-wrapper {
+  width: 100% !important;
+}
+
+.chart-container svg {
+  display: block;
+}
+
+/* Mobile optimizations */
 @media (max-width: 768px) {
-  .chart-card {
+  .line-chart-card {
     padding: 15px;
   }
-
-  .chart-card h3 {
-    font-size: 15px;
+  
+  .chart-scroll {
+    /* Optional: hide scrollbar on mobile for cleaner look */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(92, 48, 141, 0.3) transparent;
+  }
+  
+  .chart-scroll::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  .chart-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .chart-scroll::-webkit-scrollbar-thumb {
+    background: rgba(92, 48, 141, 0.3);
+    border-radius: 2px;
+  }
+  
+  .chart-container {
+    min-width: 800px; /* ensure chart is wide enough to scroll */
   }
 }
 
-.chart-card h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
+
+.chart-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .chart-container {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.chart-container > * {
-  min-width: 300px;
-}
-
-@media (max-width: 480px) {
-  .chart-container .recharts-wrapper {
-    height: 220px !important;
-  }
-}
-
-.subtitle {
-  font-size: 13px;
-  color: #888;
-  margin-bottom: 10px;
-}
-
-.chart-legend {
-  margin-top: 16px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.chart-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.95rem;
-  color: #4b4b4b;
-}
-
-.chart-legend-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
   display: inline-block;
+  min-width: 600px;
 }
-.industry-pie-card {
-  padding: 24px;
-  border-radius: 24px;
-  background: #ffffff;
-  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.06);
-  width: auto;
-  box-sizing: border-box;
-  min-width: 0;
-}
-
-.industry-pie-header h3 {
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #111827;
-}
-
-.industry-pie-header .subtitle {
-  margin-top: 8px;
-  color: #6b7280;
-  font-size: 0.95rem;
-}
-
-.industry-pie-content {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-  align-items: center;
-}
-
-.industry-pie-chart {
-  width: 100%;
-}
-
-.industry-legend {
-  display: grid;
-  gap: 12px;
-}
-
-.industry-legend-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: #f8f9fb;
-}
-
-.industry-legend-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.industry-legend-label {
-  flex: 1;
-  color: #374151;
-  font-weight: 600;
-}
-
-.industry-legend-value {
-  color: #6b7280;
-  font-weight: 600;
-}
-
-@media (min-width: 900px) {
-  /* .industry-pie-content {
-    grid-template-columns: 1fr 1fr;
-  } */
-}
-
-@media (max-width: 480px) {
-  .industry-pie-card {
-    padding: 16px;
-  }
-
-  .industry-legend-item {
-    padding: 8px 10px;
-    font-size: 13px;
-  }
-}
-.analytics-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
-  margin-top: 24px;
-}
-
-@media (max-width: 1024px) {
-  .analytics-grid {
-    gap: 16px;
-  }
-}
-
-@media (max-width: 768px) {
-  .analytics-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-}
-
-.analytics {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 24px;
-  margin-top: 24px;
-  align-items: start;
-}
-
-@media (max-width: 1024px) {
-  .analytics {
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-}
-
-@media (max-width: 768px) {
-  .analytics {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-}
-
-.key-metrics-panel {
-  background: #fff;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-
-.key-metrics-panel .card-body {
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-}
-
-.key-metrics-panel .cards-container {
-  margin-top: 0;
-}
-
-@media (max-width: 480px) {
-  .key-metrics-panel .card-body {
-    grid-template-columns: 1fr;
-  }
-
-  .key-metrics-panel {
-    padding: 16px;
-  }
-}
-

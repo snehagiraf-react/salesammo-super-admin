@@ -1,6 +1,6 @@
 import React, { useState, useImperativeHandle, forwardRef } from "react";
 import { Check, Pencil } from "lucide-react";
-import PackageModal from "./common/packageModal";
+import PackageModal from "../components/modal/packageModal";
 
 const Packages = forwardRef((props, ref) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
