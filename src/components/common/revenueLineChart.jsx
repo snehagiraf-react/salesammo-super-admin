@@ -43,10 +43,10 @@ const LineChartComponent = ({
         <div className="chart-scroll">
           <div className="chart-container" style={{ width: chartWidth }}>
             <LineChart width={chartWidth} height={300} data={data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey={xKey} />
-              <YAxis />
-              <Tooltip />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+              <XAxis dataKey={xKey} stroke="#e5e7ebab" />
+              <YAxis stroke="#e5e7ebab" />
+              <Tooltip contentStyle={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "8px" }} />
               <Legend />
 
               {lines.map((line, index) => (
@@ -68,10 +68,10 @@ const LineChartComponent = ({
         // Desktop: responsive, no scroll
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={xKey} />
-            <YAxis />
-            <Tooltip />
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+            <XAxis dataKey={xKey} stroke="#6b7280" />
+            <YAxis stroke="#6b7280" />
+            <Tooltip contentStyle={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "8px" }} />
             <Legend />
 
             {lines.map((line, index) => (

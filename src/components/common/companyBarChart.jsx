@@ -1,73 +1,133 @@
-import React from "react";
 import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
+  CartesianGrid,
   ResponsiveContainer,
+  Legend,
 } from "recharts";
+import { useState, useEffect } from "react";
 import "../../assets/styles/chart.css";
+import { Bold } from "lucide-react";
 
-const BarChartComponent = ({
+const CompanyBarChart = ({
   data = [],
-  dataKey = "value",
-  xKey = "name",
-  title = "Chart",
-  subtitle = "",
-  barColor = "#5C308D",
-  layout = "vertical", // 👈 NEW PROP
+  bars = [], // [{ dataKey: "sales", color: "#8884d8", name: "Sales" }]
+  xKey,
+  title, // Chart title
+  subtitle, // Chart subtitle
+  height = 300,
+  showGrid = true,
+  showLegend = false,
+  layout = "vertical", // or "vertical"
 }) => {
-  const isHorizontal = layout === "horizontal";
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
-  const chartHeight = isHorizontal
-    ? Math.max(data.length * 60, 300)
-    : 300;
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  // Handle empty data or bars
+  if (!data || data.length === 0 || !bars || bars.length === 0) {
+    return (
+      <div className="chart-card">
+        {title && (
+          <div className="chart-header">
+            <h3 className="chart-title">{title}</h3>
+            {subtitle && <p className="chart-subtitle">{subtitle}</p>}
+          </div>
+        )}
+        <p
+          style={{
+            textAlign: "center",
+            color: "#6b7280",
+            padding: "40px 20px",
+          }}
+        >
+          No data available
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="line-chart-card">
-      <div>
-        <h3 className="chart-title">{title}</h3>
-        {subtitle && <p className="chart-subtitle">{subtitle}</p>}
+    <div className="chart-card">
+      {title && (
+        <div className="chart-header">
+          <h3 className="chart-title">{title}</h3>
+          {subtitle && <p className="chart-subtitle">{subtitle}</p>}
+        </div>
+      )}
+      <div className={isMobile ? "chart-wrapper" : ""}>
+        <div style={isMobile ? { minWidth: "600px" } : { width: "100%" }}>
+          <ResponsiveContainer width="100%" height={height}>
+            <BarChart
+              data={data}
+              layout={layout}
+              margin={
+                layout === "vertical"
+                  ? { top: 5, right: 30, left: 0, bottom: 5 }
+                  : { top: 5, right: 30, left: 0, bottom: 5 }
+              }
+            >
+              {showGrid && (
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="#e5e7ebab"
+                />
+              )}
+
+              {layout === "vertical" ? (
+                <>
+                  <XAxis type="number" stroke="#6b7280" />
+                  <YAxis
+                    type="category"
+                    dataKey={xKey}
+                    stroke="#9196a0"
+                    width={140}
+                    fontSize={"14px"}
+                    fontWeight={Bold}
+                  />
+                </>
+              ) : (
+                <>
+                  <XAxis dataKey={xKey} type="category" stroke="#6b7280" />
+                  <YAxis type="number" stroke="#6b7280" />
+                </>
+              )}
+
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "8px",
+                }}
+                cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}
+              />
+              {showLegend && <Legend />}
+
+              {bars.map((bar, index) => (
+                <Bar
+                  key={index}
+                  dataKey={bar.dataKey}
+                  fill={bar.color}
+                  name={bar.name}
+                  radius={layout === "vertical" ? [0, 8, 8, 0] : [8, 8, 0, 0]}
+                />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
-
-      <ResponsiveContainer width="100%" height={chartHeight}>
-        <BarChart
-          data={data}
-          layout={isHorizontal ? "vertical" : "horizontal"}
-          margin={{ top: 10, right: 30, left: 10, bottom: 10 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-
-          {isHorizontal ? (
-            <>
-              <XAxis type="number" />
-              <YAxis dataKey={xKey} type="category" width={120} />
-            </>
-          ) : (
-            <>
-              <XAxis dataKey={xKey} />
-              <YAxis />
-            </>
-          )}
-
-          <Tooltip />
-
-          <Bar
-            dataKey={dataKey}
-            fill={barColor}
-            radius={
-              isHorizontal
-                ? [0, 6, 6, 0] // 👈 rounded right side
-                : [6, 6, 0, 0] // 👈 rounded top
-            }
-            barSize={isHorizontal ? 40 : 40}
-          />
-        </BarChart>
-      </ResponsiveContainer>
     </div>
   );
 };
 
-export default BarChartComponent;
+export default CompanyBarChart;

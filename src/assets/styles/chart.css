@@ -5,7 +5,69 @@
   overflow: hidden; /* contain the scroll within the card */
   max-width: 100%; /* prevent overflow from parent grid */
   position: relative; /* create containing block */
-  margin-top: 20px;
+}
+
+/* ===== Chart Card ===== */
+.chart-card {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  max-width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Chart Wrapper for Mobile Scrolling ===== */
+.chart-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  touch-action: pan-x;
+}
+
+.chart-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.chart-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chart-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(92, 48, 141, 0.3);
+  border-radius: 3px;
+}
+
+.chart-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(92, 48, 141, 0.5);
+}
+
+/* ===== Chart Header ===== */
+.chart-header {
+  margin-bottom: 20px;
+}
+
+.chart-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 4px 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+}
+
+.chart-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
 }
 
 /* 👇 scroll container */

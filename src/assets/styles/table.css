@@ -1,7 +1,29 @@
 /* ===== Container ===== */
 .table-container {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Table Wrapper for Scrolling ===== */
+.table-wrapper {
   width: 100%;
+  max-height: 500px;
+  overflow-y: auto;
   overflow-x: auto;
+}
+
+/* ===== Table Title ===== */
+.table-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 16px 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
 }
 
 /* ===== Table ===== */
@@ -11,7 +33,14 @@
   font-family: "Inter", sans-serif;
 }
 
-/* ===== Header ===== */
+/* ===== Header (Sticky) ===== */
+.user-table thead {
+  /* position: sticky; */
+  top: 0;
+  background-color: #ffffff;
+  z-index: 10;
+}
+
 .user-table thead tr {
   border-bottom: 1px solid #e5e7eb;
 }
@@ -22,6 +51,7 @@
   font-weight: 600;
   color: #6b7280;
   padding: 14px 16px;
+  background-color: #ffffff;
 }
 
 /* ===== Body Rows ===== */
@@ -47,8 +77,8 @@
 }
 
 /* ===== Revenue Highlight ===== */
-.company-revenue {
-  color: #5c308d;
+.user-table td.company-revenue {
+  color: #5c308d !important;
   font-weight: 600;
 }
 
@@ -135,5 +165,5 @@
 /* ===== Total Row (last row) ===== */
 .user-table tbody tr:last-child {
   font-weight: 600;
-  background-color: #f3f4f6;
+  /* background-color: #f3f4f6; */
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from "react";
-import { Eye } from "lucide-react";
+import Datatable from "./common/datatable";
 import CompanyModal from "./modal/companyModal";
 import "../../src/assets/styles/button.css";
 
@@ -62,15 +62,34 @@ const CompanyData = () => {
   const [actionType, setActionType] = useState('');
   const [reason, setReason] = useState('');
 
-  const handleAction = (action, companyId, companyName) => {
-    if (action === "Disable" || action === "Enable") {
-      const companyInfo = company.find(c => c.id === companyId);
-      setSelectedCompany(companyInfo);
-      setActionType(action);
+  // Define the columns structure for the table
+  const columns = [
+    { key: 'name', label: 'Company Name', className: 'company-name' },
+    { key: 'email', label: 'Email', className: 'company-email' },
+    { key: 'users', label: 'Users', className: 'company-users' },
+    { key: 'revenue', label: 'Revenue', className: 'company-revenue' },
+    { key: 'status', label: 'Status' },
+  ];
+
+  // Define available actions
+  const actions = [
+    { type: 'view' },
+    { type: 'disable' }
+  ];
+
+  const handleTableAction = (actionData) => {
+    const { type, id, rowData } = actionData;
+
+    if (type === 'view') {
+      console.log(`View company ${id}`);
+      return;
+    }
+
+    if (type === 'disable' || type === 'enable') {
+      setSelectedCompany(rowData);
+      setActionType(type === 'disable' ? 'Disable' : 'Enable');
       setReason('');
       setIsModalOpen(true);
-    } else {
-      console.log(`${action} company ${companyId}`);
     }
   };
 
@@ -81,67 +100,14 @@ const CompanyData = () => {
     setSelectedCompany(null);
   };
 
-  const getStatusBadgeClass = (status) => {
-    return status === "ACTIVE" ? "status-active" : "status-draft";
-  };
-
   return (
     <>
-    {/* Products Table */}
-      <div className="table-container">
-        <table className="user-table">
-          <thead>
-            <tr>
-              <th>Company Name</th>
-              <th>Email</th>
-              <th>Users</th>
-              <th>Revenue</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {company.map((company) => (
-              <tr key={company.id}>
-                {/* COMPANY NAME */}
-                <td className="company-name">{company.name}</td>
-
-                {/* EMAIL */}
-                <td className="company-email">{company.email}</td>
-
-                {/* USERS */}
-                <td className="company-users">{company.users}</td>
-
-                {/* REVENUE */}
-                <td className="company-revenue">{company.revenue}</td>
-
-                {/* STATUS */}
-                <td>
-                  <span className={`status-badge ${getStatusBadgeClass(company.status)}`}>
-                    {company.status}
-                  </span>
-                </td>
-
-                {/* ACTIONS */}
-                <td>
-                  <div className="actions-container">
-                    <button className="action-icon-btn" onClick={() => handleAction("View", company.id, company.name)}>
-                      <Eye size={18} />
-                    </button>
-                    <button 
-                      className={company.status === "ACTIVE" ? "action-btn-disable" : "action-btn-enable"}
-                      onClick={() => handleAction(company.status === "ACTIVE" ? "Disable" : "Enable", company.id, company.name)}
-                    >
-                      {company.status === "ACTIVE" ? "DISABLE" : "ENABLED"}
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Datatable
+        data={company}
+        columns={columns}
+        actions={actions}
+        onAction={handleTableAction}
+      />
 
       <CompanyModal
         isOpen={isModalOpen}

@@ -38,19 +38,28 @@ export default function DashboardPage() {
       dataKey: "revenue",
       name: "Revenue",
       stroke: "#5C308D",
-      dotColor: "#5C308D",
+      dotColor: "#ffffff",
     },
   ];
 
 
-  const companyData = [
-  { name: "Jan", value: 110000 },
-  { name: "Feb", value: 95000 },
-  { name: "Mar", value: 78000 },
-  { name: "Apr", value: 65000 },
-  { name: "May", value: 55000 },
-  { name: "Jun", value: 42000 },
-];
+  const chartData = [
+    { day: "mon", growth: 1000},
+    { day: "tue", growth: 1800 },
+    { day: "wed", growth: 1200 },
+    { day: "thu", growth: 2200 },
+    { day: "fri", growth: 2100 },
+    { day: "sat", growth: 3000 }
+  ];
+
+  // ✅ Bars configuration for company growth chart
+  const bars = [
+    {
+      dataKey: "growth",
+      color: "#5c308d",  // Purple color
+      name: "Growth"
+    }
+  ];
 
   return (
     <>
@@ -67,12 +76,17 @@ export default function DashboardPage() {
         />
 
 
-        <CompanyBarChart
-          data={companyData}
-          title="Company Growth"
-          subtitle="Monthly company growth trends"
-          layout="vertical" // 🔥 NEW PROP
-        />
+       <CompanyBarChart
+      title="Share Analytics"
+      subtitle="Weekly share distribution"
+      data={chartData}
+      bars={bars}
+      xKey="day"
+      height={300}
+      showGrid={true}
+      showLegend={false}
+      layout="horizontal"
+    />
         {/* <UsersPieChart /> */}
       </div>
 
