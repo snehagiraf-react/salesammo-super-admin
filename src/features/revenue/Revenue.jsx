@@ -23,18 +23,18 @@ const Revenue = () => {
 
   // ✅ ADD THIS
   const revenueData = [
-   { name: "Jan", value: 55000 },
-  { name: "Feb", value: 48000 },
-  { name: "Mar", value: 42000 },
-  { name: "Apr", value: 37000 },
-  { name: "May", value: 35000 },
-  { name: "Jun", value: 38000 },
-  { name: "Jul", value: 43000 },
-  { name: "Aug", value: 50000 },
-  { name: "Sep", value: 60000 },
-  { name: "Oct", value: 72000 },
-  { name: "Nov", value: 85000 },
-  { name: "Dec", value: 98000 },
+    { name: "Jan", value: 55000 },
+    { name: "Feb", value: 48000 },
+    { name: "Mar", value: 42000 },
+    { name: "Apr", value: 37000 },
+    { name: "May", value: 35000 },
+    { name: "Jun", value: 38000 },
+    { name: "Jul", value: 43000 },
+    { name: "Aug", value: 50000 },
+    { name: "Sep", value: 60000 },
+    { name: "Oct", value: 72000 },
+    { name: "Nov", value: 85000 },
+    { name: "Dec", value: 98000 },
   ];
 
   // ✅ ADD THIS
@@ -53,23 +53,23 @@ const Revenue = () => {
     { company: "Techcorp Inc", revenue: 78000 },
     { company: "Innovation labs", revenue: 67000 },
     { company: "Cloud Tech Pro", revenue: 55000 },
-    { company: "Enterprise Hub", revenue: 42000 }
+    { company: "Enterprise Hub", revenue: 42000 },
   ];
 
   // ✅ Bars configuration for revenue by company chart
   const bars = [
     {
       dataKey: "revenue",
-      color: "#5c308d",  // Purple color
-      name: "Revenue"
-    }
+      color: "#5c308d", // Purple color
+      name: "Revenue",
+    },
   ];
 
   return (
     <>
       <Cards cardsData={revenueCardsData} />
 
-      <div style={{ marginTop: '30px' }}>
+      <div style={{ marginTop: "30px" }}>
         <RevenueLineChart
           data={revenueData}
           title="Monthly Revenue Trend"
@@ -78,9 +78,8 @@ const Revenue = () => {
         />
       </div>
 
-      <div style={{ marginTop: '30px' }}>
-
-         <CompanyBarChart
+      <div style={{ marginTop: "30px" }}>
+        <CompanyBarChart
           title="Revenue by Company"
           subtitle=""
           data={chartData}
@@ -89,11 +88,11 @@ const Revenue = () => {
           height={300}
           showGrid={true}
           showLegend={false}
-          layout="vertical"  // ✅ Horizontal bars (companies on Y-axis)
+          layout="vertical" // ✅ Horizontal bars (companies on Y-axis)
         />
-</div>
+      </div>
 
-      <RevenueTable />
+      <Revenue Table />
     </>
   );
 };

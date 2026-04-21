@@ -1,10 +1,11 @@
 import React from 'react'
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Datatable from "./common/datatable";
 import CompanyModal from "./modal/companyModal";
 import "../../src/assets/styles/button.css";
 
-const companyData = [
+export const companyData = [
   {
     id: 1,
     name: "TechCorp Inc.",
@@ -56,6 +57,7 @@ const companyData = [
 ];
 
 const CompanyData = () => {
+  const navigate = useNavigate();
   const [company] = useState(companyData);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
@@ -81,7 +83,7 @@ const CompanyData = () => {
     const { type, id, rowData } = actionData;
 
     if (type === 'view') {
-      console.log(`View company ${id}`);
+      navigate(`/companies/${id}`);
       return;
     }
 

@@ -5,6 +5,7 @@ import DashboardPage from './features/dashboard/DashboardPage';
 import Sidebar from './components/layout/Sidebar';
 import Header from './components/layout/Header';
 import Companies from './features/company/Companies';
+import ViewCompanies from './features/company/ViewCompanies';
 import PackagesData from './features/packages/Packages';
 import Revenue from './features/revenue/Revenue';
 
@@ -69,6 +70,7 @@ const MainLayout = () => {
           <Routes>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/companies" element={<Companies />} />
+            <Route path="/companies/:id" element={<ViewCompanies />} />
             <Route path="/packages" element={<PackagesData />} />
             <Route path="/revenue" element={<Revenue />} />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
