@@ -83,6 +83,10 @@ export default function LoginPage() {
             {loading ? "Signing in…" : "Sign In"}
           </button>
         </form>
+
+        <div className="login-forgot-password">
+          <a href="/forgot-password">Forgot Password?</a>
+        </div>
       </div>
     </div>
   );

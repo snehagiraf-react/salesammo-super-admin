@@ -8,6 +8,8 @@ import Companies from './features/company/Companies';
 import ViewCompanies from './features/company/ViewCompanies';
 import PackagesData from './features/packages/Packages';
 import Revenue from './features/revenue/Revenue';
+import ProtectedRoute from './features/auth/ProtectedRoute';
+import Login from './pages/Login';
 
 import './App.css';
 
@@ -48,6 +50,8 @@ const MainLayout = () => {
 
   return (
     <>
+    <ProtectedRoute>
+
       {/* SIDEBAR */}
       <Sidebar
         isOpen={sidebarOpen}
@@ -78,6 +82,7 @@ const MainLayout = () => {
           </Routes>
         </main>
       </div>
+      </ProtectedRoute>
     </>
   );
 };
@@ -98,6 +103,7 @@ export default function App() {
 
       <div className="App">
         <Routes>
+          <Route path="/login" element={<Login />} />
           <Route path="/*" element={<MainLayout />} />
         </Routes>
       </div>
