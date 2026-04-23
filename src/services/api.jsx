@@ -2,10 +2,9 @@ import axios from "axios";
 import { redirectToLogin } from "../utils/navigate";
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL || "",
+  baseURL: process.env.REACT_APP_API_BASE_URL || "https://salesammo-backend.onrender.com/api/v1/super",
   headers: {
     "Content-Type": "application/json",
-    "ngrok-skip-browser-warning": "true",
   },
 });
 
@@ -17,7 +16,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error)
 );
 
 api.interceptors.response.use(
@@ -29,7 +28,7 @@ api.interceptors.response.use(
       redirectToLogin();
     }
     return Promise.reject(error);
-  },
+  }
 );
 
 export default api;

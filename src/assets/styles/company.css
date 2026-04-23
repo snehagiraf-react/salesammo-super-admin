@@ -9,19 +9,22 @@
 
 .products-search-container {
   input {
-    padding: 13px;
+    padding: 8px 14px;
     border: 1px solid #ece8f5;
-    border-radius: 8px;
+    border-radius: 16px;
     font-size: 14px;
+    background: #F9FAFB;
   }
 }
+
 /* company view css */
 
 .company-section {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 20px;
-
+  margin-top: 20px;
+  
    @media (max-width: 1200px) {
     grid-template-columns: 1fr;
   }

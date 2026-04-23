@@ -61,6 +61,38 @@ export default function DashboardPage() {
     }
   ];
 
+  const avtivityData =[
+     {
+            mark: "#5C308D",
+            name: "Company registered",
+            action: "TechStart Inc.",
+            time: "2 hours ago"
+          },
+          {
+            mark: "#00A63E",
+            name: "Subscription Purchased",
+            action: "Enterprise Plan - Acme Ltd",
+            time: "5 hours ago"
+          },
+          {
+            mark: "#F59E0B",
+            name: "User Invited",
+            action: "johnmathew398@gmail.com by HealthcarePlus Inc",
+            time: "1 day ago"
+          },
+          {
+            mark: "#5C308D",
+            name: "Product added",
+            action: "CRM Software by Admin",
+            time: "2 day ago"
+          },
+          {
+            mark: "#5C308D",
+            name: "Industry Added",
+            action: "Healthcare by Admin",
+            time: "3 day ago"
+          }
+  ]
   return (
     <>
       <h1 className="page-title">{getPageTitle(location.pathname)}</h1>
@@ -90,7 +122,9 @@ export default function DashboardPage() {
         {/* <UsersPieChart /> */}
       </div>
 
-      <RecentActivity />
+      <RecentActivity
+        activities={avtivityData}
+      />
     </>
   );
 }

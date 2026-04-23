@@ -33,6 +33,8 @@ const Datatable = ({
     { key: 'name', label: 'Name' }
   ];
 
+  console.log('Datatable received data:', data);
+  
   // Render cell value
   const renderCellValue = (row, column) => {
     if (column.render) {

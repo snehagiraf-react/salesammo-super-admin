@@ -6,10 +6,14 @@ import Sidebar from './components/layout/Sidebar';
 import Header from './components/layout/Header';
 import Companies from './features/company/Companies';
 import ViewCompanies from './features/company/ViewCompanies';
-import PackagesData from './features/packages/Packages';
+import PackagesData from './features/plans/Plans';
 import Revenue from './features/revenue/Revenue';
+import ActivityLog from './features/activitylog/ActivityLog';
+import Settings from './features/settings/Settings';
 import ProtectedRoute from './features/auth/ProtectedRoute';
 import Login from './pages/Login';
+import {AuthProvider} from './features/auth/AuthProvider';
+
 
 import './App.css';
 
@@ -50,6 +54,7 @@ const MainLayout = () => {
 
   return (
     <>
+    
     <ProtectedRoute>
 
       {/* SIDEBAR */}
@@ -75,8 +80,10 @@ const MainLayout = () => {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/companies" element={<Companies />} />
             <Route path="/companies/:id" element={<ViewCompanies />} />
-            <Route path="/packages" element={<PackagesData />} />
+            <Route path="/plans" element={<PackagesData />} />
             <Route path="/revenue" element={<Revenue />} />
+            <Route path="/activitylog" element={<ActivityLog />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             
           </Routes>
@@ -92,7 +99,7 @@ const MainLayout = () => {
 ========================= */
 export default function App() {
   return (
-    <>
+    <AuthProvider>
       <Toaster
         position="top-right"
         toastOptions={{
@@ -107,6 +114,7 @@ export default function App() {
           <Route path="/*" element={<MainLayout />} />
         </Routes>
       </div>
-    </>
+
+      </AuthProvider>
   );
 }

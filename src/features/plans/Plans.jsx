@@ -1,15 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { getPageTitle } from "../../utils/getPageTitle";
 import { Plus } from "lucide-react";
 import "../../assets/styles/package.css";
 import Packages from "../../components/packages";
 import Button from "../../components/common/button";
+import { useViewPlanQuery } from "../../hooks/plans/viewplan";
 
-const PackagesData = () => {
+const PlanData = () => {
   const packagesRef = React.useRef(null);
   const location = useLocation();
+  const { data: planData, isLoading, isError } = useViewPlanQuery();
 
+  useEffect(() => {
+    if (planData) {
+      console.log("Plan data from API:", planData);
+    }
+  }, [planData]);
+
+   if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error loading companies</div>;
+  
   const handleAddPackage = () => {
     if (packagesRef.current) {
       packagesRef.current.openAddModal();
@@ -18,7 +29,7 @@ const PackagesData = () => {
 
   return (
     <>
-      <div className="page-body">
+      <div className="companies-page">
         <div className="page-header">
           <h1 className="page-title">{getPageTitle(location.pathname)}</h1>
           <p style={{ color: "rgb(85, 85, 85)", fontSize: "13px" }}>
@@ -38,4 +49,4 @@ const PackagesData = () => {
   );
 };
 
-export default PackagesData;
+export default PlanData;

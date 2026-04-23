@@ -1,33 +1,68 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
+
 import { ArrowLeft, Mail, MapPin, Phone, Globe } from "lucide-react";
 import "../../assets/styles/company.css";
-import { companyData as companies } from "../../components/companyData";
+// import { companies } from "../../features/company/Companies";
+// import { useViewCompanyQuery } from "../../hooks/company/viewCompany";
+import RecentActivity from "../../components/common/recentActivity";
+import { useViewSingleCompany } from "../../hooks/company/viewSinglepage";
 
-const defaultCompanyData = {
-  year: "Enterprise client since 2024",
-  country: "United States",
-  phone: "+1 (555) 123-4567",
-  website: "www.example.com",
-};
-const subscriptionData = {
-  plan: "enterprise",
-  expiry: "2025-12-31",
-  users: 100,
-  revenue:"$10,000",
-}
+// Remove default data and use API data only
 
 const ViewCompanies = () => {
-  const navigate = useNavigate();
   const { id } = useParams();
+  const navigate = useNavigate();
+  // Fetch company details by ID
+  const { data: companyData, isLoading, isError } = useViewSingleCompany(id);
 
-  const foundCompany =
-    companies.find((c) => c.id === parseInt(id)) || companies[0];
-  const companyData = { ...defaultCompanyData, ...foundCompany };
+  const company = companyData?.data || {}; // Assuming API response has a 'data' property with company details
+
+  console.log("Single company data from API:", companyData);
+
+  // If your API returns subscription/activity as part of companyData, extract them here
+  const subscription = companyData?.subscription || {};
+  // const activities = companyData?.activities || [];
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError || !companyData) return <div>Error loading company data</div>;
 
   const statusClass =
     companyData.status === "ACTIVE" ? "status-active" : "status-draft";
 
+
+    const avtivityData =[
+     {
+            mark: "#5C308D",
+            name: "Company registered",
+            action: "TechStart Inc.",
+            time: "2 hours ago"
+          },
+          {
+            mark: "#00A63E",
+            name: "Subscription Purchased",
+            action: "Enterprise Plan - Acme Ltd",
+            time: "5 hours ago"
+          },
+          {
+            mark: "#F59E0B",
+            name: "User Invited",
+            action: "johnmathew398@gmail.com by HealthcarePlus Inc",
+            time: "1 day ago"
+          },
+          {
+            mark: "#5C308D",
+            name: "Product added",
+            action: "CRM Software by Admin",
+            time: "2 day ago"
+          },
+          {
+            mark: "#5C308D",
+            name: "Industry Added",
+            action: "Healthcare by Admin",
+            time: "3 day ago"
+          }
+  ]
   return (
     <>
       <h5>
@@ -40,20 +75,18 @@ const ViewCompanies = () => {
           {/* Top Section */}
           <div className="company-header">
             <div className="avatar">
-              {companyData.name.substring(0, 2).toUpperCase()}
+              {company.name?.substring(0, 2).toUpperCase()}
             </div>
-
             <div className="company-main">
               <div className="title-row">
-                <h2>{companyData.name}</h2>
+                <h2>{company.name}</h2>
                 <span className={`status-badge ${statusClass}`}>
-                  {companyData.status}
+                  {company.status}
                 </span>
               </div>
-              <p className="subs-sect">{companyData.year}</p>
+              <p className="subs-sect">{company.year || ""}</p>
             </div>
           </div>
-
           {/* Bottom Info Section */}
           <div className="company-details">
             <div className="detail-item">
@@ -62,67 +95,62 @@ const ViewCompanies = () => {
               </div>
               <div>
                 <p className="label">Email</p>
-                <p>{companyData.email}</p>
+                <p>{company.email}</p>
               </div>
             </div>
-
             <div className="detail-item">
               <div className="icon-box">
                 <MapPin size={30} />
               </div>
               <div>
                 <p className="label">Country</p>
-                <p>{companyData.country}</p>
+                <p>{company.country}</p>
               </div>
             </div>
-
             <div className="detail-item">
               <div className="icon-box">
                 <Phone size={30} />
               </div>
               <div>
                 <p className="label">Phone</p>
-                <p>{companyData.phone}</p>
+                <p>{company.phoneNumber}</p>
               </div>
             </div>
-
             <div className="detail-item">
               <div className="icon-box">
                 <Globe size={30} />
               </div>
               <div>
                 <p className="label">Website</p>
-                <p>{companyData.website}</p>
+                <p>{company.websiteUrl}</p>
               </div>
             </div>
           </div>
         </div>
-
         <div className="company-card-full">
           <h2>Subscription</h2>
           <div>
-              <div style={{margin: '20px 0'}}>
-                <p className='label'>Plan</p>
-                <p className="subData">{subscriptionData.plan}</p>
+            <div style={{ margin: "20px 0" }}>
+              <p className="label">Plan</p>
+              <p className="subData">{subscription.plan || "-"}</p>
             </div>
-              <div style={{margin: '20px 0'}}>
-                <p className='label'>Expiry Date</p>
-                <p className="subData-Date">{subscriptionData.expiry}</p>
-              </div>
-
-              <hr class="divider" />
-              
-              <div style={{margin: '20px 0'}}>
-                <p className='label'>Total Users</p>
-                <p className="subData-Date">{subscriptionData.users}</p>
+            <div style={{ margin: "20px 0" }}>
+              <p className="label">Expiry Date</p>
+              <p className="subData-Date">{subscription.expiry || "-"}</p>
             </div>
-              <div style={{margin: '20px 0'}}>
-                <p className='label'>Revenue</p>
-                <p className="subData">{subscriptionData.revenue}</p>
+            <hr className="divider" />
+            <div style={{ margin: "20px 0" }}>
+              <p className="label">Total Users</p>
+              <p className="subData-Date">{subscription.users || "-"}</p>
+            </div>
+            <div style={{ margin: "20px 0" }}>
+              <p className="label">Revenue</p>
+              <p className="subData">{subscription.revenue || "-"}</p>
             </div>
           </div>
         </div>
       </div>
+      <RecentActivity activities={avtivityData} />
     </>
   );
 };

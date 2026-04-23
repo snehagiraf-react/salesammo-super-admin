@@ -108,7 +108,7 @@ const Packages = forwardRef((props, ref) => {
                   onClick={() => handleEdit(plan, index)}
                 />
               </div>
-              <p style={{ fontSize: "24px", fontWeight: "600" }}>
+              <p style={{ fontSize: "24px", fontWeight: "600", color: "#5C308D"}}>
                 {plan.price}
                 <span>/month</span>
               </p>

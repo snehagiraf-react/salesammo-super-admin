@@ -314,6 +314,6 @@ input:checked + .slider:before {
 }
 
 .status-draft {
-  background: #fee;
-  color: #dc2626;
+  background: #d1fae5;
+  color: #059669;
 }

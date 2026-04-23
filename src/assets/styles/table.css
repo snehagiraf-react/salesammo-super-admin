@@ -1,3 +1,41 @@
+/* ===== Activity Log Badges ===== */
+.badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-right: 8px;
+  margin-bottom: 2px;
+}
+.badge-invite {
+  background: #ede9fe;
+  color: #7c3aed;
+}
+.badge-bulk {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+/* ===== Activity Log Layout ===== */
+.activitylog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.activitylog-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+
+  @media (max-width: 556px) {
+    margin-top: 12px;
+  } 
+}
+
 /* ===== Container ===== */
 .table-container {
   background-color: #ffffff;

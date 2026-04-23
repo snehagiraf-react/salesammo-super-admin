@@ -46,11 +46,10 @@ const revenueData = [
   },
 ];
 
+
 const RevenueTable = () => {
 
     const [revenue] = useState(revenueData);
-
-
 
     const columns = [
         { key: 'name', label: 'Company Name' },

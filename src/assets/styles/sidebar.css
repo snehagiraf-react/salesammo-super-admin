@@ -153,6 +153,10 @@
   border-radius: 12px;
 }
 
+.sidebar-menu li a:hover .label {
+  color: #ffffff;
+}
+
 .sidebar-menu li.active a {
   background: #5C308D;
   color: #ffffff;
@@ -178,11 +182,13 @@
 .sidebar-menu li a .label {
     position: relative;
   font-weight: 500;
+
 }
 
 .sidebar-menu li a .label.active {
   color: #ffffff;
   font-weight: 600;
+  
 }
 
 /* .sidebar-menu li a .icon.active {

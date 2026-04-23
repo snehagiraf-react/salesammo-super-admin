@@ -92,7 +92,7 @@ const Revenue = () => {
         />
       </div>
 
-      <Revenue Table />
+      <RevenueTable />
     </>
   );
 };

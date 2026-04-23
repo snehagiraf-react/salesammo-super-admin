@@ -1,0 +1,64 @@
+.category-toggle .mini-toggle {
+  position: absolute;
+  display: inline-block;
+  bottom: 20px;
+  right: 20px;
+}
+.distributors-toggle .mini-toggle {
+  position: absolute;
+  display: inline-block;
+  bottom: 20px;
+  right: 40px;
+
+  @media(max-width: 480px) {
+    bottom: 10px;
+  }
+}
+.media-toggle .mini-toggle {
+  position: absolute;
+  bottom: 10px;
+  right: 50px;
+}
+.mini-toggle {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+  /* bottom: 20px; */
+  /* right: 50px; */
+}
+
+.mini-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #ccc;
+  border-radius: 999px;
+  transition: 0.2s;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  top: 2px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+
+input:checked + .slider {
+  background-color: #5C308D;
+}
+
+input:checked + .slider::before {
+  transform: translateX(16px);
+}

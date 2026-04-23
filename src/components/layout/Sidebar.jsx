@@ -22,9 +22,9 @@ export default function Sidebar({ isOpen, closeSidebar }) {
     () => [
       { path: "/dashboard", label: "Dashboard" },
       { path: "/companies", label: "Companies" },
-      { path: "/packages", label: "Packages" },
+      { path: "/plans", label: "Plans" },
       { path: "/revenue", label: "Revenue" },
-      { path: "/activity-log", label: "Activity Log" },
+      { path: "/activitylog", label: "Activity Log" },
       { path: "/settings", label: "Settings" },
     ],
     [],
@@ -98,7 +98,7 @@ export default function Sidebar({ isOpen, closeSidebar }) {
         return <LayoutDashboard size={20}/>;
       case "Companies":
         return <Building2 size={20}/>;
-      case "Packages":
+      case "Plans":
         return <PackageOpen  size={20}/>;
       case "Revenue":
         return <DollarSign  size={20}/>;

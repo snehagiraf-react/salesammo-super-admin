@@ -1,0 +1,46 @@
+.settingsForm{
+    background: rgb(255, 255, 255);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.129);
+    margin-top: 20px;
+
+    footer{
+        margin-top: 20px;
+        color: #6B7280;
+    }
+}
+
+.sharing {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 4px;
+}
+
+.sharing:last-child {
+  border-bottom: none;
+}
+
+.sharing-info {
+  display: flex;
+  flex-direction: column;
+
+  h3 {
+    margin: 0 0 4px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  p {
+    margin: 0;
+    color: #6B7280;
+    font-size: 13px;
+  }
+}
+
+.sharing-toggle {
+  flex-shrink: 0;
+  margin-left: 24px;
+}

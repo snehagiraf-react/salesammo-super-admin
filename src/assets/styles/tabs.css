@@ -1,0 +1,55 @@
+.tabs-container {
+  display: inline-flex;
+  background: #f3f4f6;
+  padding: 4px;
+  border-radius: 12px;
+  gap: 4px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #6b7280;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.tab-btn.active {
+  background: #6d28d9; /* purple */
+  color: white;
+}
+
+.tab-td{
+    background: #E8E0F0;
+    border-radius: 20px;
+    border-top: none !important;
+    padding: 2px 4px !important;
+    color: #5C308D !important;
+    
+}
+.tab-tds{
+    border-top: none !important;
+    padding: 0px !important;
+    color: #6b7280 !important;
+}
+.activitylog-footer{
+  margin-top: 20px;
+
+}
+.activitylog-footer span{
+  color: #6b7280;
+  font-size: 13px !important;
+}
+
+.company-td{
+  color: #0F172A;
+}
