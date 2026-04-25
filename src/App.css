@@ -1,6 +1,6 @@
 
 body {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Roboto", sans-serif;
   background-color: #f8f8f8;
   overflow-x: hidden; /* prevent horizontal scrolling on page */
   /* height: 100%;
@@ -10,7 +10,7 @@ body {
 }
 
 @font-face {
-  font-family: "Montserrat";
+  font-family: "Roboto";
   src: url("./assets/fonts/Myfont.ttf") format("ttf");
   font-weight: 700;
 }
@@ -45,7 +45,7 @@ P, textarea, input{
 
 h1,h2, h3,h4, label, span, p, button, input, select, textarea {
   line-height: 1.2em;
-  font-family: "Montserrat", sans-serif !important;
+  font-family: "Roboto", sans-serif !important;
 }
 th, td{
   font-size: clamp(0.5rem, 2vw, 0.8rem);
@@ -61,7 +61,7 @@ th, td{
 }
 
 body {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Roboto", sans-serif;
   height: 100%;
   margin: 0;
   padding: 0;

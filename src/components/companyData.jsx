@@ -28,8 +28,8 @@ const CompanyData = ({ data = [] }) => {
         ) : null,
     },
     { key: "name", label: "Company Name" },
-    { key: "email", label: "Email"},
-    { key: "phoneNumber", label: "PhoneNumber" },
+    { key: "email", label: "Email",render: (value) => <td className="tab-tds">{value}</td>,},
+    { key: "phoneNumber", label: "PhoneNumber",render: (value) => <td className="tab-tds">{value}</td>, },
     { key: "status", label: "Status" },
   ];
 
