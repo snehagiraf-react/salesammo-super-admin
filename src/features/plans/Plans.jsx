@@ -6,24 +6,39 @@ import "../../assets/styles/package.css";
 import Packages from "../../components/packages";
 import Button from "../../components/common/button";
 import { useViewPlanQuery } from "../../hooks/plans/viewplan";
+import { usePlanUpdate } from "../../hooks/plans/update";
 
 const PlanData = () => {
-  const packagesRef = React.useRef(null);
+  const [plan, setPlan] = React.useState([]);
+  const planRef = React.useRef();
   const location = useLocation();
-  const { data: planData, isLoading, isError } = useViewPlanQuery();
+  const { data: planData, isLoading, isError, refetch } = useViewPlanQuery();
+  // const [openMenuId, setOpenMenuId] = React.useState(null);
+  // const [editingPlanId, setEditingPlanId] = React.useState(null);
+  // const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+  const planUpdateMutation = usePlanUpdate();
+
+  const handlePlanUpdate = (id, body, params) => {
+    planUpdateMutation.mutate({ id, body, params });
+
+  };
+
+  // const handleEdit = (data) => {
+  //   setOpenMenuId(null);
+  //   setEditingPlanId(data.id);
+  //   setIsModalOpen(true);
+  // };
 
   useEffect(() => {
     if (planData) {
-      console.log("Plan data from API:", planData);
+      setPlan(Array.isArray(planData) ? planData : planData.data);
     }
   }, [planData]);
 
-   if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error loading companies</div>;
-  
   const handleAddPackage = () => {
-    if (packagesRef.current) {
-      packagesRef.current.openAddModal();
+    if (planRef.current) {
+      planRef.current.openAddModal();
     }
   };
 
@@ -36,6 +51,7 @@ const PlanData = () => {
             Manage your subscription and billing
           </p>
         </div>
+
         <div style={{ marginBottom: "20px" }}>
           <Button onClick={handleAddPackage}>
             <Plus size={18} />
@@ -44,7 +60,12 @@ const PlanData = () => {
         </div>
       </div>
 
-      <Packages ref={packagesRef} />
+      {/* ✅ Conditional rendering starts here */}
+      {isLoading && <div>Loading...</div>}
+
+      {isError && <div>Error loading plans</div>}
+
+      <Packages ref={planRef} data={!isLoading && !isError ? plan : []} onRefresh={refetch} />
     </>
   );
 };
