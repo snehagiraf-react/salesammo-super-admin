@@ -7,6 +7,7 @@ import Packages from "../../components/packages";
 import Button from "../../components/common/button";
 import { useViewPlanQuery } from "../../hooks/plans/viewplan";
 import { usePlanUpdate } from "../../hooks/plans/update";
+import { useRemovePlan } from "../../hooks/plans/deleteplan";
 
 const PlanData = () => {
   const [plan, setPlan] = React.useState([]);
@@ -18,11 +19,16 @@ const PlanData = () => {
   // const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const planUpdateMutation = usePlanUpdate();
+  const planDeleteMutation = useRemovePlan();
 
   const handlePlanUpdate = (id, body, params) => {
     planUpdateMutation.mutate({ id, body, params });
 
   };
+
+  const handlePlanDelete = (id) => {
+    planDeleteMutation.mutate(id);
+  }
 
   // const handleEdit = (data) => {
   //   setOpenMenuId(null);

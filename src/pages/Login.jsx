@@ -8,6 +8,7 @@ import { useAuth } from '../features/auth/AuthProvider';
 import { AuthContext } from '../features/auth/AuthProvider';    
 import { toast } from 'react-hot-toast';
 import {useLoginMutation} from '../hooks/auth/login';
+import ForgotPasswordModal from '../components/modal/forgotPassword';
 
 
 const Login = () => {
@@ -15,6 +16,7 @@ const Login = () => {
     const{login, isAuthenticated} = useContext(AuthContext);
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
+    const [isForgotModalOpen, setIsForgotModalOpen] = React.useState(false);
 
     const navigate = useNavigate();
     const loginMutation = useLoginMutation();
@@ -75,10 +77,14 @@ const Login = () => {
                 </div>
 
                 <div className='forgotpsw'>
-                    <Link to="/forgot-password" style={{width:"100%"}}>Forgot Password?</Link>
+                    <span onClick={() => setIsForgotModalOpen(true)} style={{width:"100%", cursor:"pointer"}}>Forgot Password?</span>
                 </div>
 
             </form>
+            <ForgotPasswordModal 
+                isOpen={isForgotModalOpen}
+                onClose={() => setIsForgotModalOpen(false)}
+            />
         </div>
     </div>
     </>

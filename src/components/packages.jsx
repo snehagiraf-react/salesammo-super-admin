@@ -1,14 +1,20 @@
 
 import React, { useState, useImperativeHandle, forwardRef } from "react";
-import { Pencil, Check  } from "lucide-react";
+import { Pencil, Check, Trash2 } from "lucide-react";
 import PackageModal from "../components/modal/packageModal";
 import { usePackageStore } from "../hooks/plans/addplans";
 import { usePlanUpdate } from "../hooks/plans/update";
+import { useRemovePlan } from "../hooks/plans/deleteplan";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 
 
 const Packages = forwardRef((props, ref) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("edit");
+  const planDeleteMutation = useRemovePlan();
+  const [openMenuId, setOpenMenuId] = React.useState(null);
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -49,6 +55,37 @@ const Packages = forwardRef((props, ref) => {
       features: (plan.features || []).filter((f) => typeof f === "string"),
     });
     setIsModalOpen(true);
+  };
+
+  const handleDelete = (planId) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "This action cannot be undone.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        planDeleteMutation.mutate(planId, {
+          onSuccess: () => {
+            toast.success("Plan deleted successfully");
+            if (props.onRefresh) props.onRefresh();
+          },
+          onError: (err) => {
+            toast.error("Failed to delete plan");
+            console.error(err);
+          }
+        });
+      }
+    });
+    setOpenMenuId(null);
+  };
+  const handleAddPackage = () => {
+    if (ref.current) {
+      ref.current.openAddModal();
+    }
   };
 
   const handleAddNew = () => {
@@ -157,15 +194,27 @@ const Packages = forwardRef((props, ref) => {
                   <button className="action-button-inactive">Inactive</button>
                 )}
               </div>
-              <Pencil
-                size={16}
-                style={{
-                  color: "#5C308D",
-                  marginLeft: "8px",
-                  cursor: "pointer",
-                }}
-                onClick={() => handleEdit(plan, index)}
-              />
+              <div className="icons">
+
+                <Pencil
+                  size={16}
+                  style={{
+                    color: "#5C308D",
+                    marginLeft: "8px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => handleEdit(plan, index)}
+                />
+                <Trash2
+                  size={16}
+                  style={{
+                    color: "#dc3545",
+                    marginLeft: "8px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => handleDelete(plan._id || plan.id)}
+                />
+              </div>
             </div>
             <div
               style={{
@@ -184,8 +233,8 @@ const Packages = forwardRef((props, ref) => {
               style={{ fontSize: "24px", fontWeight: "600", color: "#5C308D" }}
             >
               {Array.isArray(plan.pricing) &&
-              plan.pricing[0] &&
-              plan.pricing[0].offerPrice ? (
+                plan.pricing[0] &&
+                plan.pricing[0].offerPrice ? (
                 <>
                   <span
                     style={{
@@ -262,7 +311,7 @@ const Packages = forwardRef((props, ref) => {
 
                     }}
                   >
-                   <Check size={18} className="check-icon"/> {feature}
+                    <Check size={18} className="check-icon" /> {feature}
                   </span>
                 ))}
             </div>
@@ -306,6 +355,8 @@ const Packages = forwardRef((props, ref) => {
                 </p>
               </div>
             </footer>
+            <div>
+            </div>
           </div>
         ))}
       </div>
