@@ -7,7 +7,6 @@ import { useLoginMutation } from "../../hooks/auth/login";
 import api from "../../services/api";
 import { AuthContext } from "../../features/auth/AuthProvider";
 
-
 const ForgotPasswordModal = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
@@ -60,10 +59,11 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
     try {
       // Step 2: Reset password using the token
       const payload = {
-        password: newPassword,
+        newPassword: newPassword, // Backend expects newPassword
       };
       await api.post(`/auth/reset-password/${resetToken}`, payload);
       toast.success("Password reset successfully!");
+      
       // Auto-login with new password
       try {
         const response = await loginMutation.mutateAsync({ email, password: newPassword });
