@@ -2,45 +2,26 @@ import React from "react";
 import Toggle from "../components/common/toggle";
 import "../assets/styles/settings.css";
 
-const AccessControl = () => {
-  const [checkedMap, setCheckedMap] = React.useState({});
+const AccessControl = ({ settings }) => {
+  // Remove default accesscontrol, use settings from props
+  if (!settings) return null;
 
-  const onToggleChange = (index, newChecked) => {
-    setCheckedMap((prev) => ({ ...prev, [index]: newChecked }));
-  };
-
-  const accesscontrol = [
-    {
-      id: 1,
-      title: "Allow Sharing",
-      message: "Enable content sharing features across the platform",
-    },
-    {
-      id: 2,
-      title: "Require Email Verification",
-      message: "Force users to verify their email before accessing features",
-    },
-  ];
-
+  // Example: show support email if present
   return (
     <>
       <div className="settingsForm">
         <h2>Access Control</h2>
         <hr className="divider" />
-        {accesscontrol.map((item, index) => (
-          <div key={item.id} className="sharing">
+        {settings.supportDetails && (
+          <div className="sharing">
+            
             <div className="sharing-info">
-              <h3>{item.title}</h3>
-              <p>{item.message}</p>
+              <h3>Support Email</h3>
+              <p>{settings.supportDetails.supportEmail}</p>
             </div>
-            <div className="sharing-toggle">
-              <Toggle
-                onChange={(newChecked) => onToggleChange(index, newChecked)}
-                checked={checkedMap[index] ?? index !== 2}
-              />
-            </div>
+            
           </div>
-        ))}
+        )}
       </div>
     </>
   );

@@ -8,11 +8,13 @@ import Button from "../../components/common/button";
 import { useViewPlanQuery } from "../../hooks/plans/viewplan";
 import { usePlanUpdate } from "../../hooks/plans/update";
 import { useRemovePlan } from "../../hooks/plans/deleteplan";
+import Toggle from "../../components/common/toggle";
 
 const PlanData = () => {
   const [plan, setPlan] = React.useState([]);
   const planRef = React.useRef();
   const location = useLocation();
+  const [isYearly, setIsYearly] = React.useState(false);
   const { data: planData, isLoading, isError, refetch } = useViewPlanQuery();
   // const [openMenuId, setOpenMenuId] = React.useState(null);
   // const [editingPlanId, setEditingPlanId] = React.useState(null);
@@ -23,12 +25,11 @@ const PlanData = () => {
 
   const handlePlanUpdate = (id, body, params) => {
     planUpdateMutation.mutate({ id, body, params });
-
   };
 
   const handlePlanDelete = (id) => {
     planDeleteMutation.mutate(id);
-  }
+  };
 
   // const handleEdit = (data) => {
   //   setOpenMenuId(null);
@@ -57,8 +58,22 @@ const PlanData = () => {
             Manage your subscription and billing
           </p>
         </div>
-
-        <div style={{ marginBottom: "20px" }}>
+        <div
+          style={{
+            marginBottom: "20px",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <Toggle
+            checked={isYearly}
+            onChange={(checked) => {
+              setIsYearly(checked);
+            }}
+          />
+          <span style={{ marginLeft: "8px", marginRight: "20px" }}>
+            switch to yearly
+          </span>
           <Button onClick={handleAddPackage}>
             <Plus size={18} />
             Add Packages
@@ -71,7 +86,22 @@ const PlanData = () => {
 
       {isError && <div>Error loading plans</div>}
 
-      <Packages ref={planRef} data={!isLoading && !isError ? plan : []} onRefresh={refetch} />
+      <Packages
+        ref={planRef}
+        data={
+          !isLoading && !isError
+            ? plan.filter((p) => {
+                // If plan.pricing is an array, check billingCycle of first item
+                if (Array.isArray(p.pricing) && p.pricing[0]) {
+                  return isYearly
+                    ? p.pricing[0].billingCycle === "yearly";
+                }
+                return false;
+              })
+            : []
+        }
+        onRefresh={refetch}
+      />
     </>
   );
 };

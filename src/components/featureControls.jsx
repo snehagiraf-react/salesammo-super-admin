@@ -1,58 +1,59 @@
-import React from "react";
+import React, { useContext } from "react";
 import Toggle from "../components/common/toggle";
 import "../assets/styles/settings.css";
+import { ThemeContext } from "../context/ThemeContext";
 
-const FeatureControls = () => {
-  const [checkedMap, setCheckedMap] = React.useState({});
 
-  const onToggleChange = (index, newChecked) => {
-    setCheckedMap((prev) => ({ ...prev, [index]: newChecked }));
+const FeatureControls = ({ onUpdate, settings }) => {
+  const branding = settings?.branding || null;
+  const { theme, toggleTheme } = useContext(ThemeContext);
+  const [toggleChecked, setToggleChecked] = React.useState(false);
+
+  // Sync toggle with API and context
+  React.useEffect(() => {
+    if (branding?.theme) {
+      setToggleChecked(branding.theme === "dark");
+    } else {
+      setToggleChecked(theme === "dark");
+    }
+  }, [branding, theme]);
+
+  // Toggle handler
+  const handleToggle = (checked) => {
+    setToggleChecked(checked);
+    const newTheme = checked ? "dark" : "light";
+    // Update theme globally via context
+    if (theme !== newTheme) toggleTheme();
+    // Send to backend
+    onUpdate?.({
+      branding: { ...branding, theme: newTheme },
+    });
   };
 
-  const featurecontrols = [
-    {
-      id: 1,
-      title: "Enable User Invites",
-      message: "Allow companies to invite new users to their accounts",
-    },
-    {
-      id: 2,
-      title: "Enable Company Registration",
-      message: "Allow new companies to register on the platform",
-    },
-    {
-      id: 3,
-      title: "Enable Public API",
-      message: "Allow external applications to access the platform API",
-    },
-    {
-      id: 4,
-      title: "Enable Data Export",
-      message: "Allow companies to export their data",
-    },
-  ];
-
   return (
-    <>
-      <div className="settingsForm">
-        <h2>Feature Controls</h2>
-        <hr className="divider" />
-        {featurecontrols.map((item, index) => (
-          <div key={item.id} className="sharing">
-            <div className="sharing-info">
-              <h3>{item.title}</h3>
-              <p>{item.message}</p>
-            </div>
-            <div className="sharing-toggle">
-              <Toggle
-                onChange={(newChecked) => onToggleChange(index, newChecked)}
-                checked={checkedMap[index] ?? index !== 2}
-              />
-            </div>
+    <div className="settingsForm">
+      <h2>Feature Controls</h2>
+      <hr className="divider" />
+
+      {branding && (
+        <div className="sharing">
+          <div className="sharing-info">
+            <h3>Branding</h3>
+            <p>Theme: {branding.theme}</p>
+            <p>Primary Color: {branding.primaryColor}</p>
+            <img
+              src={branding.logoUrl}
+              alt="Logo"
+              style={{ maxWidth: 120, marginTop: 10 }}
+            />
           </div>
-        ))}
-      </div>
-    </>
+
+          <div className="sharing-toggle">
+            <Toggle checked={toggleChecked} onChange={handleToggle} />
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
