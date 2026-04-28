@@ -90,14 +90,14 @@ const PlanData = () => {
         ref={planRef}
         data={
           !isLoading && !isError
-            ? plan.filter((p) => {
-                // If plan.pricing is an array, check billingCycle of first item
-                if (Array.isArray(p.pricing) && p.pricing[0]) {
-                  return isYearly
-                    ? p.pricing[0].billingCycle === "yearly";
-                }
-                return false;
-              })
+            ? (isYearly
+                ? plan.filter((p) => {
+                    if (Array.isArray(p.pricing) && p.pricing[0]) {
+                      return p.pricing[0].billingCycle === "yearly";
+                    }
+                    return false;
+                  })
+                : plan)
             : []
         }
         onRefresh={refetch}
