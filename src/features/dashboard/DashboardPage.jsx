@@ -1,9 +1,10 @@
 import React from "react";
 import "./DashboardPage.css";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import RevenueLineChart from "../../components/common/revenueLineChart";
 import CompanyBarChart from "../../components/common/companyBarChart";
 import Cards from "../../components/common/cards";
+import { Building2, Users, DollarSign, Podcast } from "lucide-react";
 import { getPageTitle } from "../../utils/getPageTitle";
 import RecentActivity from "../../components/common/recentActivity";
 
@@ -15,6 +16,43 @@ export default function DashboardPage() {
   //     localStorage.removeItem('user');
   //     navigate('/login');
   //   };
+
+
+
+  const dashboardCards = [
+    {
+      id: "1",
+      icon: <Building2 size={25} />,
+      value: "2,543",
+      trend: "+12.5%",
+      title: "Total Companies",
+      isPositive: true,
+    },
+    {
+      id: "2",
+      icon: <Users size={25} />,
+      value: "2,543",
+      trend: "+12.5%",
+      title: "Total Customers",
+      isPositive: true,
+    },
+    {
+      id: "3",
+      icon: <DollarSign size={25} />,
+      value: "2,543",
+      trend: "+12.5%",
+      title: "Total Revenue",
+      isPositive: true,
+    },
+    {
+      id: "4",
+      icon: <Podcast size={25} />,
+      value: "2,543",
+      trend: "+12.5%",
+      title: "Total Subscriptions",
+      isPositive: false,
+    },
+  ];
 
 
    const revenueData = [
@@ -97,7 +135,8 @@ export default function DashboardPage() {
     <>
       <h1 className="page-title">{getPageTitle(location.pathname)}</h1>
      
-      <Cards />
+      <Cards cardsData={dashboardCards} />
+      
       <div className="dashboard-content">
      
         <RevenueLineChart 

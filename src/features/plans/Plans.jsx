@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { getPageTitle } from "../../utils/getPageTitle";
-import { Plus } from "lucide-react";
+import { BadgePlus } from "lucide-react";
 import "../../assets/styles/package.css";
 import Packages from "../../components/packages";
 import Button from "../../components/common/button";
@@ -22,6 +22,7 @@ const PlanData = () => {
 
   const planUpdateMutation = usePlanUpdate();
   const planDeleteMutation = useRemovePlan();
+  
 
   const handlePlanUpdate = (id, body, params) => {
     planUpdateMutation.mutate({ id, body, params });
@@ -75,7 +76,7 @@ const PlanData = () => {
             switch to yearly
           </span>
           <Button onClick={handleAddPackage}>
-            <Plus size={18} />
+            <BadgePlus size={18} />
             Add Packages
           </Button>
         </div>

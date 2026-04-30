@@ -129,14 +129,34 @@
   display: inline-block;
 }
 
+
 .status-active {
   background-color: #e6f7ee;
   color: #16a34a;
 }
-
 .status-draft {
   background-color: #f3f4f6;
   color: #6b7280;
+}
+.status-pending {
+  background-color: #fff7ed;
+  color: #f59e42;
+}
+.status-expired {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+.status-disabled {
+  background-color: #f3f4f6;
+  color: #a3a3a3;
+}
+.status-default {
+  background-color: #e0e7ef;
+  color: #64748b;
+}
+.status-trial{
+  background-color: #e0f2fe;
+  color: #0284c7;
 }
 
 /* ===== Actions ===== */

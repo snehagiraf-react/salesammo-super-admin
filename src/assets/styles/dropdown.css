@@ -23,11 +23,11 @@
 .dropdown-menu {
   position: absolute;
   top: 110%;
-  left: 0;
+  left: -75px;
   background: white;
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-  min-width: 180px;
+  min-width: 120px;
   padding: 6px 0;
   z-index: 10;
 }

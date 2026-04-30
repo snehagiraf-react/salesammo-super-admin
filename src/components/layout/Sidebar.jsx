@@ -7,11 +7,12 @@ import { AuthContext } from "../../features/auth/AuthProvider";
 import {
   LayoutDashboard,
   Building2,
-  PackageOpen ,
-  DollarSign ,
-  ChartSpline ,
+  PackageOpen,
+  DollarSign,
+  ChartSpline,
   Settings,
-  LogOut 
+  LogOut,
+  Notebook,
 } from "lucide-react";
 
 import sidebarLogo from "../../assets/images/logo.png";
@@ -23,6 +24,7 @@ export default function Sidebar({ isOpen, closeSidebar }) {
       { path: "/dashboard", label: "Dashboard" },
       { path: "/companies", label: "Companies" },
       { path: "/plans", label: "Plans" },
+      { path: "/subscription-plans", label: "Subscription Plan" },
       { path: "/revenue", label: "Revenue" },
       { path: "/activitylog", label: "Activity Log" },
       { path: "/settings", label: "Settings" },
@@ -95,17 +97,19 @@ export default function Sidebar({ isOpen, closeSidebar }) {
   const renderIcon = (label) => {
     switch (label) {
       case "Dashboard":
-        return <LayoutDashboard size={20}/>;
+        return <LayoutDashboard size={20} />;
       case "Companies":
-        return <Building2 size={20}/>;
+        return <Building2 size={20} />;
       case "Plans":
-        return <PackageOpen  size={20}/>;
+        return <PackageOpen size={20} />;
+      case "Subscription Plan":
+        return <Notebook size={20} />;
       case "Revenue":
-        return <DollarSign  size={20}/>;
+        return <DollarSign size={20} />;
       case "Activity Log":
-        return <ChartSpline  size={20}/>;
+        return <ChartSpline size={20} />;
       case "Settings":
-        return <Settings size={20}/>;
+        return <Settings size={20} />;
       default:
         return null;
     }
@@ -178,7 +182,6 @@ export default function Sidebar({ isOpen, closeSidebar }) {
       </nav>
 
       <div className="bottom">
-        
         <div className="sidebar-footer">
           <button onClick={handleLogout} className="logout-btn">
             <LogOut size={20} />

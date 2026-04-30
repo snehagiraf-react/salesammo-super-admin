@@ -6,7 +6,9 @@ import Sidebar from './components/layout/Sidebar';
 import Header from './components/layout/Header';
 import Companies from './features/company/Companies';
 import ViewCompanies from './features/company/ViewCompanies';
+import ViewSubscriptionPlan from './features/subscription-plans/Viewsubscriptionplan';
 import PackagesData from './features/plans/Plans';
+import SubscriptionPlans from './features/subscription-plans/SubscriptionPlans';
 import Revenue from './features/revenue/Revenue';
 import ActivityLog from './features/activitylog/ActivityLog';
 import Settings from './features/settings/Settings';
@@ -80,7 +82,9 @@ const MainLayout = () => {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/companies" element={<Companies />} />
             <Route path="/companies/:id" element={<ViewCompanies />} />
+            <Route path='/subscription-plans/:id' element={<ViewSubscriptionPlan />} />
             <Route path="/plans" element={<PackagesData />} />
+            <Route path="/subscription-plans" element={<SubscriptionPlans />} />
             <Route path="/revenue" element={<Revenue />} />
             <Route path="/activitylog" element={<ActivityLog />} />
             <Route path="/settings" element={<Settings />} />

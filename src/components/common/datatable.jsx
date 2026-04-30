@@ -1,5 +1,5 @@
 import React from 'react';
-import { Eye, Edit, Trash2 } from 'lucide-react';
+import { Eye, Edit, Trash2, EllipsisVertical } from 'lucide-react';
 import '../../assets/styles/table.css';
 
 /**
@@ -41,9 +41,32 @@ const Datatable = ({
       return column.render(row[column.key], row);
     }
     
-    // Handle status badge styling
+    // Handle status badge styling with multiple colors
     if (column.key === 'status') {
-      const statusClass = row[column.key] === 'ACTIVE' ? 'status-active' : 'status-draft';
+      const statusValue = String(row[column.key] || '').toLowerCase();
+      let statusClass = '';
+      switch (statusValue) {
+        case 'active':
+          statusClass = 'status-active';
+          break;
+        case 'draft':
+          statusClass = 'status-draft';
+          break;
+        case 'pending':
+          statusClass = 'status-pending';
+          break;
+        case 'expired':
+          statusClass = 'status-expired';
+          break;
+        case 'disabled':
+          statusClass = 'status-disabled';
+          break;
+        case 'trial':
+          statusClass = 'status-trial';
+          break;
+        default:
+          statusClass = 'status-default';
+      }
       return (
         <span className={`status-badge ${statusClass}`}>
           {row[column.key]}
@@ -54,63 +77,81 @@ const Datatable = ({
     return row[column.key];
   };
 
-  // Render action button
-  const renderActionButton = (action, row) => {
+  // ActionsDropdown as a component to use hooks properly
+  const ActionsDropdown = ({ row }) => {
     const iconProps = { size: 18 };
-    
-    switch(action.type) {
-      case 'view':
-        return (
-          <button 
-            className="action-icon-btn" 
-            title="View"
-            onClick={() => onAction?.({ type: 'view', id: row.id, rowData: row })}
-          >
-            <Eye {...iconProps} />
-          </button>
-        );
-      
-      case 'edit':
-        return (
-          <button 
-            className="action-icon-btn action-edit" 
-            title="Edit"
-            onClick={() => onAction?.({ type: 'edit', id: row.id, rowData: row })}
-          >
-            <Edit {...iconProps} />
-          </button>
-        );
-      
-      case 'delete':
-        return (
-          <button 
-            className="action-icon-btn action-delete" 
-            title="Delete"
-            onClick={() => onAction?.({ type: 'delete', id: row.id, rowData: row })}
-          >
-            <Trash2 {...iconProps} />
-          </button>
-        );
-      
-      case 'disable':
-      case 'enable':
-        const isActive = row.status === 'ACTIVE';
-        const buttonText = isActive ? 'DISABLE' : 'ENABLE';
-        const buttonClass = isActive ? 'action-btn-disable' : 'action-btn-enable';
-        const actionType = isActive ? 'disable' : 'enable';
-        
-        return (
-          <button 
-            className={`action-btn ${buttonClass}`}
-            onClick={() => onAction?.({ type: actionType, id: row.id, rowData: row })}
-          >
-            {buttonText}
-          </button>
-        );
-      
-      default:
-        return null;
-    }
+    const options = actions
+      .filter(action => ['view', 'edit', 'delete'].includes(action.type))
+      .map(action => {
+        let label, icon;
+        switch (action.type) {
+          case 'view':
+            label = 'View';
+            icon = <Eye {...iconProps} />;
+            break;
+          case 'edit':
+            label = 'Edit';
+            icon = <Edit {...iconProps} />;
+            break;
+          case 'delete':
+            label = 'Delete';
+            icon = <Trash2 {...iconProps} />;
+            break;
+          default:
+            label = action.type;
+            icon = null;
+        }
+        return {
+          value: action.type,
+          label: (
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {icon} {label}
+            </span>
+          )
+        };
+      });
+
+    const [open, setOpen] = React.useState(false);
+    const ref = React.useRef();
+    React.useEffect(() => {
+      const handleClickOutside = (e) => {
+        if (ref.current && !ref.current.contains(e.target)) {
+          setOpen(false);
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    if (options.length === 0) return null;
+
+    const handleAction = (type) => {
+      onAction?.({ type, id: row.id, rowData: row });
+    };
+
+    return (
+      <div className="dropdown" ref={ref}>
+        <button className="action-icon-btn" title="Actions" onClick={() => setOpen(!open)}>
+          <EllipsisVertical size={20} />
+        </button>
+        {open && (
+          <div className="dropdown-menu">
+            {options.map(opt => (
+              <div
+                key={opt.value}
+                className="dropdown-item"
+                onClick={() => {
+                  handleAction(opt.value);
+                  setOpen(false);
+                }}
+              >
+                {opt.label}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
   };
 
   if (data.length === 0) {
@@ -149,11 +190,7 @@ const Datatable = ({
                 {actions.length > 0 && (
                   <td>
                     <div className="actions-container">
-                      {actions.map((action, actionIndex) => (
-                        <React.Fragment key={actionIndex}>
-                          {renderActionButton(action, row)}
-                        </React.Fragment>
-                      ))}
+                      <ActionsDropdown row={row} />
                     </div>
                   </td>
                 )}
