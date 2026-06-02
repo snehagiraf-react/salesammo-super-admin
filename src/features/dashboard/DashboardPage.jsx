@@ -3,13 +3,12 @@ import "./DashboardPage.css";
 import { useLocation } from "react-router-dom";
 import RevenueLineChart from "../../components/common/revenueLineChart";
 import CompanyBarChart from "../../components/common/companyBarChart";
-import Cards from "../../components/common/cards";
-import { Building2, Users, DollarSign, Podcast } from "lucide-react";
+import DashboardCards from "../../components/common/DashboardCards";
 import { getPageTitle } from "../../utils/getPageTitle";
 import RecentActivity from "../../components/common/recentActivity";
 
 export default function DashboardPage() {
-    const location = useLocation();
+  const location = useLocation();
   //   const navigate = useNavigate();
   //   const handleLogout = () => {
   //     localStorage.removeItem('token');
@@ -17,153 +16,47 @@ export default function DashboardPage() {
   //     navigate('/login');
   //   };
 
-
-
-  const dashboardCards = [
-    {
-      id: "1",
-      icon: <Building2 size={25} />,
-      value: "2,543",
-      trend: "+12.5%",
-      title: "Total Companies",
-      isPositive: true,
-    },
-    {
-      id: "2",
-      icon: <Users size={25} />,
-      value: "2,543",
-      trend: "+12.5%",
-      title: "Total Customers",
-      isPositive: true,
-    },
-    {
-      id: "3",
-      icon: <DollarSign size={25} />,
-      value: "2,543",
-      trend: "+12.5%",
-      title: "Total Revenue",
-      isPositive: true,
-    },
-    {
-      id: "4",
-      icon: <Podcast size={25} />,
-      value: "2,543",
-      trend: "+12.5%",
-      title: "Total Subscriptions",
-      isPositive: false,
-    },
-  ];
-
-
-   const revenueData = [
-    { name: "Jan", revenue: 1000 },
-    { name: "Feb", revenue: 2000 },
-    { name: "Mar", revenue: 3500 },
-    { name: "Apr", revenue: 3800 },
-    { name: "May", revenue: 4500 },
-    { name: "Jun", revenue: 5900 },
-    { name: "Jul", revenue: 6400 },
-    { name: "Aug", revenue: 7200 },
-    { name: "Sep", revenue: 8100 },
-    { name: "Oct", revenue: 9200 },
-    { name: "Nov", revenue: 9500 },
-    { name: "Dec", revenue: 9800 },
-  ];
-
-  // ✅ ADD THIS
-  const revenueLines = [
-    {
-      dataKey: "revenue",
-      name: "Revenue",
-      stroke: "#5C308D",
-      dotColor: "#ffffff",
-    },
-  ];
-
-
   const chartData = [
-    { day: "mon", growth: 1000},
+    { day: "mon", growth: 1000 },
     { day: "tue", growth: 1800 },
     { day: "wed", growth: 1200 },
     { day: "thu", growth: 2200 },
     { day: "fri", growth: 2100 },
-    { day: "sat", growth: 3000 }
+    { day: "sat", growth: 3000 },
   ];
 
   // ✅ Bars configuration for company growth chart
   const bars = [
     {
       dataKey: "growth",
-      color: "#5c308d",  // Purple color
-      name: "Growth"
-    }
+      color: "#5c308d", // Purple color
+      name: "Growth",
+    },
   ];
 
-  const avtivityData =[
-     {
-            mark: "#5C308D",
-            name: "Company registered",
-            action: "TechStart Inc.",
-            time: "2 hours ago"
-          },
-          {
-            mark: "#00A63E",
-            name: "Subscription Purchased",
-            action: "Enterprise Plan - Acme Ltd",
-            time: "5 hours ago"
-          },
-          {
-            mark: "#F59E0B",
-            name: "User Invited",
-            action: "johnmathew398@gmail.com by HealthcarePlus Inc",
-            time: "1 day ago"
-          },
-          {
-            mark: "#5C308D",
-            name: "Product added",
-            action: "CRM Software by Admin",
-            time: "2 day ago"
-          },
-          {
-            mark: "#5C308D",
-            name: "Industry Added",
-            action: "Healthcare by Admin",
-            time: "3 day ago"
-          }
-  ]
   return (
     <>
       <h1 className="page-title">{getPageTitle(location.pathname)}</h1>
-     
-      <Cards cardsData={dashboardCards} />
-      
+
+      <DashboardCards />
+
       <div className="dashboard-content">
-     
-        <RevenueLineChart 
-          data={revenueData}
-          title="Revenue Growth"
-          subtitle="Monthly revenue trends overview"
-          lines={revenueLines}
-        />
-
-
-       <CompanyBarChart
-      title="Share Analytics"
-      subtitle="Weekly share distribution"
-      data={chartData}
-      bars={bars}
-      xKey="day"
-      height={300}
-      showGrid={true}
-      showLegend={false}
-      layout="horizontal"
-    />
+        <RevenueLineChart />
+        {/* <CompanyBarChart
+          title="Share Analytics"
+          subtitle="Weekly share distribution"
+          data={chartData}
+          bars={bars}
+          xKey="day"
+          height={300}
+          showGrid={true}
+          showLegend={false}
+          layout="horizontal"
+        /> */}
         {/* <UsersPieChart /> */}
       </div>
 
-      <RecentActivity
-        activities={avtivityData}
-      />
+      <RecentActivity />
     </>
   );
 }

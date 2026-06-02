@@ -1,18 +1,17 @@
-import React from "react";
 import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getPageTitle } from "../../utils/getPageTitle";
 import "../../assets/styles/company.css";
 import CompanyData from "../../components/companyData";
 import { useViewCompanyQuery } from "../../hooks/company/viewCompany";
-import SearchFilter from "../../components/common/search";
+import SearchItem from "../../components/common/searchItem";
+import Pagination, { usePagination } from "../../components/common/pagination";
 
 const Companies = () => {
-  const [company, setCompany] = React.useState([]);
+  const [company, setCompany] = useState([]);
   const { data: companyData, isLoading, isError } = useViewCompanyQuery();
-
-  // Debug log to see the actual API response
-  console.log("companyData from API:", companyData);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     if (companyData) {
@@ -21,7 +20,13 @@ const Companies = () => {
     }
   }, [companyData]);
 
-  console.log("Company state:", company);
+  const rows = useMemo(
+    () => (isSearching ? filteredUsers : company),
+    [isSearching, filteredUsers, company],
+  );
+
+  const { currentPage, currentItems, totalPages, handlePageChange } =
+    usePagination(rows, 5);
 
   const location = useLocation();
   if (isLoading) return <div>Loading...</div>;
@@ -31,9 +36,46 @@ const Companies = () => {
     <>
       <div className="companies-page">
         <h1 className="page-title">{getPageTitle(location.pathname)}</h1>
-        <SearchFilter placeholder="Search by product name..." />
       </div>
-      <CompanyData data={company} />
+      
+      {/* SEARCH */}
+      <SearchItem
+        data={company}
+        searchField={[
+          "name",
+          "email",
+          "phoneNumber",
+          "status",
+          // Legacy/back-end variants (kept for compatibility)
+          "company_name",
+          "company_email",
+          "company_phone",
+          "company_address",
+          "company_city",
+          "company_state",
+        ]}
+        placeholder="Search companies..."
+        onResultsChange={({ filteredData, searchItem }) => {
+          setFilteredUsers(filteredData);
+
+          setIsSearching(searchItem?.trim()?.length > 0);
+        }}
+      />
+
+      <CompanyData data={currentItems} />
+
+      {rows.length > 0 && (
+        <div className="activity-pagination">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+          <span>
+            Showing {currentItems.length} of {rows.length} companies
+          </span>
+        </div>
+      )}
     </>
   );
 };
