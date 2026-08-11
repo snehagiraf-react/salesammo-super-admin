@@ -1,4 +1,3 @@
-
 import React, { useState, useImperativeHandle, forwardRef } from "react";
 import { Pencil, Check, Trash2 } from "lucide-react";
 import PackageModal from "../components/modal/packageModal";
@@ -15,12 +14,13 @@ const Packages = forwardRef((props, ref) => {
   const planDeleteMutation = useRemovePlan();
   const [openMenuId, setOpenMenuId] = React.useState(null);
 
-  const [formData, setFormData] = useState({
+  const emptyForm = {
     name: "",
     description: "",
     code: "",
     type: "",
-    billingCycle: "",
+    billingCycle: "monthly",
+    pricingType: "company",
     price: "",
     offerPrice: "",
     limits: {
@@ -28,7 +28,9 @@ const Packages = forwardRef((props, ref) => {
       storageSpaceInGB: "",
     },
     features: [""],
-  });
+  };
+
+  const [formData, setFormData] = useState(emptyForm);
 
 
   const subcripPlans = props.data || [];
@@ -38,21 +40,37 @@ const Packages = forwardRef((props, ref) => {
 
   const handleEdit = (plan) => {
     const pricing = plan.pricing?.[0] || {};
+    // Map legacy "free" values to current backend enum
+    const planType =
+      plan.type === "free" ? "trial" : plan.type === "trial" || plan.type === "paid" ? plan.type : "";
+    const pricingType =
+      pricing.type === "user" || pricing.type === "company"
+        ? pricing.type
+        : "company";
+    const billingCycle =
+      pricing.billingCycle === "yearly" || pricing.billingCycle === "monthly"
+        ? pricing.billingCycle
+        : "monthly";
+
     setModalMode("edit");
     setEditingPlanId(plan._id || plan.id);
     setFormData({
       name: plan.name || "",
       description: plan.description || "",
       code: plan.code || "",
-      type: plan.type || "",
-      billingCycle: pricing.billingCycle || "",
-      price: pricing.price || "",
-      offerPrice: pricing.offerPrice || "",
+      type: planType,
+      billingCycle,
+      pricingType,
+      price: pricing.price ?? "",
+      offerPrice: pricing.offerPrice ?? "",
       limits: {
-        maxUsers: plan.limits?.maxUsers || "",
-        storageSpaceInGB: plan.limits?.storageSpaceInGB || "",
+        maxUsers: plan.limits?.maxUsers ?? "",
+        storageSpaceInGB: plan.limits?.storageSpaceInGB ?? "",
       },
-      features: (plan.features || []).filter((f) => typeof f === "string"),
+      features:
+        (plan.features || []).filter((f) => typeof f === "string").length > 0
+          ? (plan.features || []).filter((f) => typeof f === "string")
+          : [""],
     });
     setIsModalOpen(true);
   };
@@ -90,20 +108,8 @@ const Packages = forwardRef((props, ref) => {
 
   const handleAddNew = () => {
     setModalMode("add");
-    setFormData({
-      name: "",
-      description: "",
-      code: "",
-      type: "",
-      billingCycle: "",
-      price: "",
-      offerPrice: "",
-      limits: {
-        maxUsers: "",
-        storageSpaceInGB: "",
-      },
-      features: [""],
-    });
+    setFormData({ ...emptyForm });
+    setEditingPlanId(null);
     setIsModalOpen(true);
   };
 
@@ -112,17 +118,7 @@ const Packages = forwardRef((props, ref) => {
   }));
 
   const resetForm = () => {
-    setFormData({
-      name: "",
-      description: "",
-      code: "",
-      type: "",
-      billingCycle: "",
-      price: "",
-      offerPrice: "",
-      limits: { maxUsers: "", storageSpaceInGB: "" },
-      features: [""],
-    });
+    setFormData({ ...emptyForm });
     setEditingPlanId(null);
   };
 
@@ -130,11 +126,13 @@ const Packages = forwardRef((props, ref) => {
     if (modalMode === "add") {
       addPackageMutation.mutate(payload, {
         onSuccess: () => {
+          toast.success("Plan created successfully");
           setIsModalOpen(false);
           resetForm();
           if (props.onRefresh) props.onRefresh();
         },
         onError: (err) => {
+          toast.error(err.response?.data?.message || "Failed to create plan");
           console.error("Failed to create package:", err);
         },
       });
@@ -143,11 +141,13 @@ const Packages = forwardRef((props, ref) => {
         { id: editingPlanId, body: payload },
         {
           onSuccess: () => {
+            toast.success("Plan updated successfully");
             setIsModalOpen(false);
             resetForm();
             if (props.onRefresh) props.onRefresh();
           },
           onError: (err) => {
+            toast.error(err.response?.data?.message || "Failed to update plan");
             console.error("Failed to update package:", err);
           },
         }
@@ -185,7 +185,7 @@ const Packages = forwardRef((props, ref) => {
                 <div
                   className={plan.type === "paid" ? "type-color" : "type-free"}
                 >
-                  {plan.type === "paid" ? "Paid" : "Free"}
+                  {plan.type === "paid" ? "Paid" : plan.type === "trial" ? "Trial" : plan.type || "—"}
                 </div>
 
                 {plan.isActive ? (
@@ -271,7 +271,7 @@ const Packages = forwardRef((props, ref) => {
                     : ""}
                 </span>
               )}
-              {plan.pricing && plan.pricing[0] && (
+              {plan.pricing && plan.pricing[0]?.billingCycle && (
                 <span style={{ fontSize: '13px', fontWeight: 500, color: '#5C308D', marginLeft: '2px' }}>
                   /{plan.pricing[0].billingCycle}
                 </span>

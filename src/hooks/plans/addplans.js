@@ -1,9 +1,5 @@
-import {
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query'
-import api from '../../services/api';
-
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import api from "../../services/api";
 
 export const usePackageStore = () => {
   const queryClient = useQueryClient();
@@ -20,8 +16,7 @@ export const usePackageStore = () => {
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['viewpackage']);
+      queryClient.invalidateQueries(["viewpackage"]);
     },
   });
-
 };

@@ -39,7 +39,10 @@ const Login = () => {
      const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await loginMutation.mutateAsync({ email, password });
+      const response = await loginMutation.mutateAsync({
+        email: email.trim(),
+        password,
+      });
       response && console.log('Login response:', response);
       if (response?.success && response?.data?.accessToken && response?.data?.refreshToken) {
         await login({
@@ -49,11 +52,16 @@ const Login = () => {
         toast.success('Login successful!');
         navigate('/dashboard');
       } else {
-        toast.error('Login failed: Invalid response');
+        toast.error(response?.message || 'Login failed: Invalid response');
         console.error('Login failed: Invalid response', response);
       }
     } catch (err) {
-      toast.error('Login failed. Please check your credentials.');
+      const errorMsg =
+        err.response?.data?.message ||
+        (err.message?.includes('Network')
+          ? 'Unable to reach the server. Please try again.'
+          : 'Login failed. Please check your credentials.');
+      toast.error(errorMsg);
       console.error('Login failed', err);
     }
   };
@@ -67,7 +75,7 @@ const Login = () => {
 
             <form onSubmit={handleSubmit}>
                 <div>
-                    <input type="text" placeholder="Username" value={email} onChange={(e) => setEmail(e.target.value)} />
+                    <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" />
                 </div>
                 <div>
                     <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />

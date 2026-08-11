@@ -7,6 +7,7 @@ import "../../assets/styles/company.css";
 // import { useViewCompanyQuery } from "../../hooks/company/viewCompany";
 import RecentActivity from "../../components/common/recentActivity";
 import { useViewSingleCompany } from "../../hooks/company/viewSinglepage";
+import Button from "../../components/common/button";
 
 // Remove default data and use API data only
 

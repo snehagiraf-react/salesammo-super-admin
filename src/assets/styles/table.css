@@ -49,9 +49,37 @@
 /* ===== Table Wrapper for Scrolling ===== */
 .table-wrapper {
   width: 100%;
-  max-height: 500px;
-  overflow-y: auto;
   overflow-x: auto;
+  overflow-y: visible;
+}
+
+/* Keep action menus above table rows */
+.user-table td.actions-cell {
+  position: relative;
+  overflow: visible;
+  z-index: 1;
+}
+
+.user-table tbody tr:hover td.actions-cell {
+  z-index: 5;
+}
+
+.table-actions-dropdown {
+  position: relative;
+}
+
+.table-actions-menu {
+  right: 0;
+  left: auto;
+  z-index: 1000;
+  min-width: 140px;
+}
+
+/* Portaled menus are fixed to the viewport so table overflow can't clip them */
+.table-actions-menu-portal {
+  top: auto;
+  left: auto;
+  right: auto;
 }
 
 /* ===== Table Title ===== */

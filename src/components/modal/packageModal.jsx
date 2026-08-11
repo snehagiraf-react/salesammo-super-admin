@@ -62,42 +62,43 @@ const PackageModal = ({
     if (!formData.name?.trim()) newErrors.name = "Plan name is required";
     if (!formData.code?.trim()) newErrors.code = "Code is required";
     if (!formData.type) newErrors.type = "Type is required";
-    if (!formData.price) newErrors.price = "Price is required";
+    if (formData.price === "" || formData.price === null || formData.price === undefined) {
+      newErrors.price = "Price is required";
+    }
     if (!formData.billingCycle) newErrors.billingCycle = "Billing cycle is required";
+    if (!formData.pricingType) newErrors.pricingType = "Pricing type is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSave = () => {
-    console.log('Save button clicked', { formData, mode });
-    if (!validate()) {
-      console.log('Validation failed', errors, formData);
-      return;
-    }
+    if (!validate()) return;
 
     const payload = {
-      name: formData.name,
+      name: formData.name.trim(),
       description: formData.description || "",
-      code: formData.code,
+      code: formData.code.trim(),
+      // Backend enum: trial | paid
       type: formData.type,
-      features: formData.features.filter((f) => f.trim() !== ""),
+      features: (formData.features || []).filter((f) => String(f).trim() !== ""),
       limits: {
         maxUsers: Number(formData.limits?.maxUsers) || 0,
         storageSpaceInGB: Number(formData.limits?.storageSpaceInGB) || 0,
       },
       pricing: [
         {
-          billingCycle: formData.billingCycle,
           price: Number(formData.price),
-          offerPrice: formData.offerPrice ? Number(formData.offerPrice) : undefined,
+          offerPrice: formData.offerPrice === "" || formData.offerPrice === null || formData.offerPrice === undefined
+            ? 0
+            : Number(formData.offerPrice),
+          // Backend enum: company | user
+          type: formData.pricingType,
+          billingCycle: formData.billingCycle,
         },
       ],
     };
 
-    if (onSave) {
-      console.log('Calling onSave', payload);
-      onSave(payload);
-    }
+    if (onSave) onSave(payload);
   };
 
   const inputStyle = (field) => ({
@@ -135,8 +136,6 @@ const PackageModal = ({
       showCloseButton={true}
     >
       <div style={{ padding: "10px 0" }}>
-
-        {/* Row 1: Plan Name + Code */}
         <div className="package-form-row">
           <div style={fieldWrap}>
             <label style={labelStyle}>Plan Name *</label>
@@ -154,7 +153,7 @@ const PackageModal = ({
             <input
               type="text"
               value={formData.code || ""}
-              placeholder="e.g., PRO_MONTHLY"
+              placeholder="e.g., PRO"
               onChange={(e) => handleInputChange("code", e.target.value)}
               style={inputStyle("code")}
             />
@@ -162,17 +161,16 @@ const PackageModal = ({
           </div>
         </div>
 
-        {/* Row 2: Type + Billing Cycle */}
         <div className="package-form-row">
           <div style={fieldWrap}>
-            <label style={labelStyle}>Type *</label>
+            <label style={labelStyle}>Plan Type *</label>
             <select
               value={formData.type || ""}
               onChange={(e) => handleInputChange("type", e.target.value)}
               style={inputStyle("type")}
             >
               <option value="">Select type</option>
-              <option value="free">Free</option>
+              <option value="trial">Trial</option>
               <option value="paid">Paid</option>
             </select>
             {errors.type && <p style={errorStyle}>{errors.type}</p>}
@@ -192,13 +190,25 @@ const PackageModal = ({
           </div>
         </div>
 
-        {/* Row 3: Price + Offer Price */}
         <div className="package-form-row">
+          <div style={fieldWrap}>
+            <label style={labelStyle}>Pricing For *</label>
+            <select
+              value={formData.pricingType || ""}
+              onChange={(e) => handleInputChange("pricingType", e.target.value)}
+              style={inputStyle("pricingType")}
+            >
+              <option value="">Select pricing type</option>
+              <option value="company">Company</option>
+              <option value="user">User</option>
+            </select>
+            {errors.pricingType && <p style={errorStyle}>{errors.pricingType}</p>}
+          </div>
           <div style={fieldWrap}>
             <label style={labelStyle}>Price (₹) *</label>
             <input
               type="number"
-              value={formData.price || ""}
+              value={formData.price ?? ""}
               placeholder="0"
               min="0"
               onChange={(e) => handleInputChange("price", e.target.value)}
@@ -206,46 +216,48 @@ const PackageModal = ({
             />
             {errors.price && <p style={errorStyle}>{errors.price}</p>}
           </div>
+        </div>
+
+        <div className="package-form-row">
           <div style={fieldWrap}>
             <label style={labelStyle}>Offer Price (₹)</label>
             <input
               type="number"
-              value={formData.offerPrice || ""}
+              value={formData.offerPrice ?? ""}
               placeholder="0"
               min="0"
               onChange={(e) => handleInputChange("offerPrice", e.target.value)}
               style={inputStyle("offerPrice")}
             />
           </div>
-        </div>
-
-        {/* Row 4: Max Users + Storage */}
-        <div className="package-form-row">
           <div style={fieldWrap}>
             <label style={labelStyle}>Max Users</label>
             <input
               type="number"
-              value={formData.limits?.maxUsers || ""}
+              value={formData.limits?.maxUsers ?? ""}
               placeholder="e.g., 10"
               min="0"
               onChange={(e) => handleLimitChange("maxUsers", e.target.value)}
               style={inputStyle("maxUsers")}
             />
           </div>
+        </div>
+
+        <div className="package-form-row">
           <div style={fieldWrap}>
             <label style={labelStyle}>Storage (GB)</label>
             <input
               type="number"
-              value={formData.limits?.storageSpaceInGB || ""}
+              value={formData.limits?.storageSpaceInGB ?? ""}
               placeholder="e.g., 5"
               min="0"
               onChange={(e) => handleLimitChange("storageSpaceInGB", e.target.value)}
               style={inputStyle("storageSpaceInGB")}
             />
           </div>
+          <div style={fieldWrap} />
         </div>
 
-        {/* Description */}
         <div style={fieldWrap}>
           <label style={labelStyle}>Description</label>
           <textarea
@@ -267,7 +279,6 @@ const PackageModal = ({
           />
         </div>
 
-        {/* Features */}
         <div style={{ marginBottom: "20px" }}>
           <div
             style={{
@@ -279,6 +290,7 @@ const PackageModal = ({
           >
             <label style={labelStyle}>Features</label>
             <button
+              type="button"
               onClick={handleAddFeature}
               style={{
                 background: "none",
@@ -329,7 +341,6 @@ const PackageModal = ({
           ))}
         </div>
 
-        {/* Action Buttons */}
         <div
           style={{
             display: "flex",
@@ -339,6 +350,7 @@ const PackageModal = ({
           }}
         >
           <button
+            type="button"
             onClick={onClose}
             disabled={isLoading}
             style={{
@@ -355,6 +367,7 @@ const PackageModal = ({
             Cancel
           </button>
           <button
+            type="button"
             onClick={handleSave}
             disabled={isLoading}
             style={{

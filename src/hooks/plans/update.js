@@ -9,7 +9,7 @@ export const usePlanUpdate = () => {
     mutationFn: async ({ id, body, params }) => {
       const config = {};
       if (params) config.params = params;
-      // Only set multipart header when sending FormData
+      // Let the browser set multipart boundary when sending FormData
       if (body instanceof FormData) {
         config.headers = { "Content-Type": "multipart/form-data" };
       }
@@ -17,7 +17,7 @@ export const usePlanUpdate = () => {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["viewpackage"]);
+      queryClient.invalidateQueries({ queryKey: ["viewpackage"] });
     },
   });
 };

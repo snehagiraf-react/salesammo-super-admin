@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation} from "@tanstack/react-query";
 import api from "../../services/api";
 
 export const useViewSingleCompany = (id) => {
@@ -12,3 +12,17 @@ export const useViewSingleCompany = (id) => {
     },
   });
 };
+
+export const useRemoveCompany = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id) => {
+      const res = await api.delete(`/company/delete/${id}`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['viewcompany']);
+    },
+  });
+};  

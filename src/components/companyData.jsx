@@ -12,9 +12,13 @@ const CompanyData = ({ data = [] }) => {
   const [actionType, setActionType] = useState("");
   const [reason, setReason] = useState("");
 
-  const appURL = process.env.REACT_APP_IMAGE_BASE_URL
-
-  console.log("companydata", data);
+  const resolveImageUrl = (path) => {
+    if (!path) return "";
+    if (/^https?:\/\//i.test(path)) return path;
+    const base = (process.env.REACT_APP_IMAGE_BASE_URL || "").replace(/\/+$/, "");
+    const relative = String(path).replace(/^\/+/, "");
+    return `${base}/${relative}`;
+  };
 
   // Define the columns structure for the table
   const columns = [
@@ -24,7 +28,11 @@ const CompanyData = ({ data = [] }) => {
       className: "company-logo",
       render: (value) =>
         value ? (
-          <img src={`${appURL}${value}`} alt="Logo" style={{ width: 32, height: 32 }} />
+          <img
+            src={resolveImageUrl(value)}
+            alt="Logo"
+            style={{ width: 32, height: 32, objectFit: "cover" }}
+          />
         ) : null,
     },
     { key: "name", label: "Company Name" },
@@ -34,13 +42,13 @@ const CompanyData = ({ data = [] }) => {
   ];
 
   // Define available actions
-  const actions = [{ type: "view" }, { type: "disable" }];
+  const actions = [{ type: "view" }, { type: "edit" }, { type: "disable" }];
 
   const handleTableAction = (actionData) => {
     const { type, id, rowData } = actionData;
 
     if (type === "view") {
-      navigate(`/companies/${id}`);
+      navigate(`/companies/${id || rowData?._id || rowData?.id}`);
       return;
     }
 

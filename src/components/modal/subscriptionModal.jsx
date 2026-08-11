@@ -1,9 +1,24 @@
-import React, { useState } from "react";
-import { Trash2 } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
 import Modal from "../common/modal";
 import "../../assets/styles/modal.css";
+import { useViewPlanQuery } from "../../hooks/plans/viewplan";
+import { useViewCompanyQuery } from "../../hooks/company/viewCompany";
+import { useCompanyQuery } from "../../hooks/company/viewCompany";
 
-export const SubscriptionModal = ({
+const toDateInputValue = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toISOString().slice(0, 10);
+};
+
+const addDays = (baseDate, days) => {
+  const date = new Date(baseDate);
+  date.setDate(date.getDate() + days);
+  return date.toISOString().slice(0, 10);
+};
+
+const SubscriptionModal = ({
   isOpen,
   onClose,
   formData,
@@ -13,101 +28,154 @@ export const SubscriptionModal = ({
   isLoading = false,
 }) => {
   const [errors, setErrors] = useState({});
+  const { data: plansData, isLoading: plansLoading } = useViewPlanQuery();
+  const { data: companiesData, isLoading: companiesLoading } =
+    useViewCompanyQuery();
+
+  const plans = useMemo(() => {
+    const raw = Array.isArray(plansData) ? plansData : plansData?.data;
+    return (Array.isArray(raw) ? raw : []).filter(
+      (p) => p && (p._id || p.id) && p.isActive !== false,
+    );
+  }, [plansData]);
+
+  const companies = useMemo(() => {
+    const raw = Array.isArray(companiesData)
+      ? companiesData
+      : companiesData?.data;
+    return Array.isArray(raw) ? raw : [];
+  }, [companiesData]);
+
+  const selectedPlanId =
+    typeof formData.plan === "object" && formData.plan !== null
+      ? formData.plan._id || formData.plan.id || ""
+      : formData.plan || "";
+
+  const selectedOwnerId =
+    typeof formData.ownerId === "object" && formData.ownerId !== null
+      ? formData.ownerId._id || formData.ownerId.id || ""
+      : formData.ownerId || "";
+
+  // Prefill missing dates once when add modal opens
+  useEffect(() => {
+    if (!isOpen || mode !== "add") return;
+
+    setFormData((prev) => {
+      if (prev.startDate && prev.endDate) return prev;
+
+      const today = new Date().toISOString().slice(0, 10);
+      const cycleDays = prev.billingCycle === "yearly" ? 365 : 30;
+      const next = { ...prev };
+
+      if (!prev.startDate) next.startDate = today;
+      if (prev.status === "trial") {
+        if (!prev.trialEndDate) next.trialEndDate = addDays(today, 7);
+        if (!prev.endDate) next.endDate = next.trialEndDate;
+      } else if (!prev.endDate) {
+        next.endDate = addDays(today, cycleDays);
+      }
+
+      return next;
+    });
+  }, [isOpen, mode, setFormData]);
 
   const handleInputChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setFormData((prev) => {
+      const next = {
+        ...prev,
+        [field]: value,
+        ...(field === "ownerType" ? { ownerId: "" } : {}),
+      };
+
+      if (field === "status") {
+        next.isTrial = value === "trial";
+        if (value !== "trial") next.trialEndDate = "";
+      }
+
+      if (field === "billingCycle" || field === "status") {
+        const start = prev.startDate || new Date().toISOString().slice(0, 10);
+        const cycleDays =
+          (field === "billingCycle" ? value : prev.billingCycle) === "yearly"
+            ? 365
+            : 30;
+        const statusValue = field === "status" ? value : prev.status;
+
+        if (statusValue === "trial") {
+          next.trialEndDate = addDays(start, 7);
+          next.endDate = next.trialEndDate;
+        } else {
+          next.endDate = addDays(start, cycleDays);
+        }
+      }
+
+      if (field === "startDate" && value) {
+        const cycleDays = prev.billingCycle === "yearly" ? 365 : 30;
+        if (prev.status === "trial") {
+          next.trialEndDate = addDays(value, 7);
+          next.endDate = next.trialEndDate;
+        } else {
+          next.endDate = addDays(value, cycleDays);
+        }
+      }
+
+      return next;
+    });
+
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
-  const handleAddFeature = () => {
-    setFormData((prev) => ({
-      ...prev,
-      features: [...prev.features, ""],
-    }));
-  };
-
-  const handleFeatureChange = (index, value) => {
-    const updatedFeatures = [...formData.features];
-    updatedFeatures[index] = value;
-    setFormData((prev) => ({
-      ...prev,
-      features: updatedFeatures,
-    }));
-  };
-
-  const handleRemoveFeature = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      features: prev.features.filter((_, i) => i !== index),
-    }));
-  };
-
   const validate = () => {
     const newErrors = {};
-
-    if (!formData.plan?.trim()) {
-      newErrors.plan = "Plan name is required";
+    if (!selectedPlanId) newErrors.plan = "Plan is required";
+    if (!formData.ownerType) newErrors.ownerType = "Owner type is required";
+    if (!selectedOwnerId) newErrors.ownerId = "Owner is required";
+    if (!formData.status) newErrors.status = "Status is required";
+    if (!formData.paymentStatus) {
+      newErrors.paymentStatus = "Payment status is required";
     }
-
-    if (!formData.ownerType?.trim()) {
-      newErrors.ownerType = "Owner Type is required";
-    }
-
-    if (!formData.ownerId?.trim()) {
-      newErrors.ownerId = "Owner ID is required";
-    }
-
-    // if (formData.isTrial === "") {
-    //   newErrors.isTrial = "Trial status is required";
-    // }
-
     if (!formData.billingCycle) {
       newErrors.billingCycle = "Billing cycle is required";
     }
-
-    if (!formData.status) {
-      newErrors.status = "Status is required";
+    if (!formData.startDate) newErrors.startDate = "Start date is required";
+    if (!formData.endDate) newErrors.endDate = "End date is required";
+    if (formData.status === "trial" && !formData.trialEndDate) {
+      newErrors.trialEndDate = "Trial end date is required for trial status";
     }
-
-    // if (!formData.paymentId) {
-    //   newErrors.paymentId = "Payment ID is required";
-    // }
-
-    if (!formData.paymentStatus) {
-      newErrors.paymentStatus = "Payment Status is required";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSave = () => {
-    console.log("Save button clicked", { formData, mode });
-    if (!validate()) {
-      console.log("Validation failed", errors, formData);
-      return;
-    }
+    if (!validate()) return;
 
     const payload = {
-      plan: formData.plan, // should be the plan's ID (string)
-      ownerType: formData.ownerType,
-      ownerId: formData.ownerId,
-      // isTrial: formData.isTrial,
-      billingCycle: formData.billingCycle,
+      plan: String(selectedPlanId),
+      planId: String(selectedPlanId),
+      ownerType: String(formData.ownerType).toLowerCase(),
+      ownerId: String(selectedOwnerId),
       status: formData.status,
-      paymentId: formData.paymentId,
       paymentStatus: formData.paymentStatus,
+      billingCycle: String(formData.billingCycle || "monthly").toLowerCase(),
+      startDate: formData.startDate
+        ? new Date(formData.startDate).toISOString()
+        : undefined,
+      endDate: formData.endDate
+        ? new Date(formData.endDate).toISOString()
+        : undefined,
+      trialEndDate:
+        formData.status === "trial" && formData.trialEndDate
+          ? new Date(formData.trialEndDate).toISOString()
+          : null,
+      isTrial: formData.status === "trial",
+      replaceExisting: Boolean(formData.replaceExisting),
+      PlanHistory: Array.isArray(formData.PlanHistory)
+        ? formData.PlanHistory
+        : [],
     };
 
-    if (onSave) {
-      console.log("Calling onSave", payload);
-      onSave(payload);
-    }
+    if (onSave) onSave(payload);
   };
 
   const inputStyle = (field) => ({
@@ -145,61 +213,115 @@ export const SubscriptionModal = ({
       showCloseButton={true}
     >
       <div style={{ padding: "10px 0" }}>
-        {/* Row 1: Plan Name + Code */}
         <div className="package-form-row">
           <div style={fieldWrap}>
             <label style={labelStyle}>Plan *</label>
-            <input
-              type="text"
-              value={formData.plan || ""}
-              placeholder="e.g., Professional"
+            <select
+              value={selectedPlanId}
               onChange={(e) => handleInputChange("plan", e.target.value)}
               style={inputStyle("plan")}
-            />
+              disabled={plansLoading}
+            >
+              <option value="">
+                {plansLoading ? "Loading plans..." : "Select plan"}
+              </option>
+              {plans.map((plan) => (
+                <option key={plan._id || plan.id} value={plan._id || plan.id}>
+                  {plan.name}
+                  {plan.code ? ` (${plan.code})` : ""}
+                </option>
+              ))}
+            </select>
             {errors.plan && <p style={errorStyle}>{errors.plan}</p>}
           </div>
+
           <div style={fieldWrap}>
             <label style={labelStyle}>Owner Type *</label>
-            <input
-              type="text"
+            <select
               value={formData.ownerType || ""}
-              placeholder="..."
               onChange={(e) => handleInputChange("ownerType", e.target.value)}
               style={inputStyle("ownerType")}
-            />
+            >
+              <option value="">Select owner type</option>
+              <option value="company">Company</option>
+              <option value="user">User</option>
+            </select>
             {errors.ownerType && <p style={errorStyle}>{errors.ownerType}</p>}
           </div>
         </div>
 
         <div className="package-form-row">
           <div style={fieldWrap}>
-            <label style={labelStyle}>Owner ID *</label>
-            <input
-              type="text"
-              value={formData.ownerId || ""}
-              placeholder="..."
-              onChange={(e) => handleInputChange("ownerId", e.target.value)}
-              style={inputStyle("ownerId")}
-            />
+            <label style={labelStyle}>Owner *</label>
+            {formData.ownerType === "company" ? (
+              <select
+                value={selectedOwnerId}
+                onChange={(e) => handleInputChange("ownerId", e.target.value)}
+                style={inputStyle("ownerId")}
+                disabled={companiesLoading}
+              >
+                <option value="">
+                  {companiesLoading ? "Loading companies..." : "Select company"}
+                </option>
+                {companies.map((company) => (
+                  <option
+                    key={company._id || company.id}
+                    value={company._id || company.id}
+                  >
+                    {company.name || company.company_name || company.email}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                value={selectedOwnerId}
+                placeholder="Paste user MongoDB ObjectId"
+                onChange={(e) => handleInputChange("ownerId", e.target.value)}
+                style={inputStyle("ownerId")}
+                disabled={!formData.ownerType}
+              />
+            )}
             {errors.ownerId && <p style={errorStyle}>{errors.ownerId}</p>}
           </div>
-          
-        </div>
-        <div className="package-form-row">
-          {/* <div style={fieldWrap}>
-            <label style={labelStyle}>IsTrial *</label>
-            <input
-              type="text"
-              value={formData.isTrial || ""}
-              placeholder="..."
-              onChange={(e) => handleInputChange("isTrial", e.target.value)}
-              style={inputStyle("isTrial")}
-            />
-            {errors.isTrial && <p style={errorStyle}>{errors.isTrial}</p>}
-          </div> */}
+
+          <div style={fieldWrap}>
+            <label style={labelStyle}>Status *</label>
+            <select
+              value={formData.status || ""}
+              onChange={(e) => handleInputChange("status", e.target.value)}
+              style={inputStyle("status")}
+            >
+              <option value="">Select status</option>
+              <option value="trial">Trial</option>
+              <option value="active">Active</option>
+              <option value="expired">Expired</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            {errors.status && <p style={errorStyle}>{errors.status}</p>}
+          </div>
         </div>
 
         <div className="package-form-row">
+          <div style={fieldWrap}>
+            <label style={labelStyle}>Payment Status *</label>
+            <select
+              value={formData.paymentStatus || ""}
+              onChange={(e) =>
+                handleInputChange("paymentStatus", e.target.value)
+              }
+              style={inputStyle("paymentStatus")}
+            >
+              <option value="">Select payment status</option>
+              <option value="pending">Pending</option>
+              <option value="paid">Paid</option>
+              <option value="failed">Failed</option>
+            </select>
+            {errors.paymentStatus && (
+              <p style={errorStyle}>{errors.paymentStatus}</p>
+            )}
+          </div>
+
           <div style={fieldWrap}>
             <label style={labelStyle}>Billing Cycle *</label>
             <select
@@ -217,47 +339,8 @@ export const SubscriptionModal = ({
               <p style={errorStyle}>{errors.billingCycle}</p>
             )}
           </div>
-
-          <div style={fieldWrap}>
-            <label style={labelStyle}>Status *</label>
-            <input
-              type="text"
-              value={formData.status || ""}
-              placeholder="..."
-              onChange={(e) => handleInputChange("status", e.target.value)}
-              style={inputStyle("status")}
-            />
-            {errors.status && <p style={errorStyle}>{errors.status}</p>}
-          </div>
         </div>
 
-        {/* Row 3: Price + Offer Price */}
-        <div className="package-form-row">
-          <div style={fieldWrap}>
-            <label style={labelStyle}>Payment ID</label>
-            <input
-              type="text"
-              value={formData.paymentId || ""}
-              placeholder="..."
-              onChange={(e) => handleInputChange("paymentId", e.target.value)}
-              style={inputStyle("paymentId")}
-            />
-          </div>
-          <div style={fieldWrap}>
-            <label style={labelStyle}>Payment Status</label>
-            <input
-              type="text"
-              value={formData.paymentStatus || ""}
-              placeholder="..."
-              onChange={(e) =>
-                handleInputChange("paymentStatus", e.target.value)
-              }
-              style={inputStyle("paymentStatus")}
-            />
-          </div>
-        </div>
-
-        {/* Action Buttons */}
         <div
           style={{
             display: "flex",
@@ -267,6 +350,7 @@ export const SubscriptionModal = ({
           }}
         >
           <button
+            type="button"
             onClick={onClose}
             disabled={isLoading}
             style={{
@@ -283,6 +367,7 @@ export const SubscriptionModal = ({
             Cancel
           </button>
           <button
+            type="button"
             onClick={handleSave}
             disabled={isLoading}
             style={{
@@ -295,43 +380,18 @@ export const SubscriptionModal = ({
               cursor: isLoading ? "not-allowed" : "pointer",
               fontSize: "14px",
               fontWeight: "500",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
             }}
           >
-            {isLoading ? (
-              <>
-                <span
-                  style={{
-                    width: "14px",
-                    height: "14px",
-                    border: "2px solid rgba(255,255,255,0.4)",
-                    borderTopColor: "white",
-                    borderRadius: "50%",
-                    display: "inline-block",
-                    animation: "spin 0.7s linear infinite",
-                  }}
-                />
-                Saving...
-              </>
-            ) : mode === "add" ? (
-              "Create Subscription"
-            ) : (
-              "Save Changes"
-            )}
+            {isLoading
+              ? "Saving..."
+              : mode === "add"
+                ? "Create Subscription"
+                : "Save Changes"}
           </button>
         </div>
       </div>
-
-      <style>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </Modal>
   );
-}
+};
 
 export default SubscriptionModal;

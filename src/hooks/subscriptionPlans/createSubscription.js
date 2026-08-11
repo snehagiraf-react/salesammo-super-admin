@@ -17,10 +17,10 @@ export const useSubscriptionStore = () => {
         : {};
 
       const res = await api.post("/subscription/create", body, config);
-      return res;
+      return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['viewSubscriptionPlans']);
+      queryClient.invalidateQueries({ queryKey: ["viewSubscriptionPlans"] });
     },
   });
 

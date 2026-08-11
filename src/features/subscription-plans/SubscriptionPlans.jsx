@@ -1,92 +1,78 @@
-import React, { useEffect } from "react";
-import { BellRing, BadgePlus, ShieldCheck, Shell } from "lucide-react";
-import { useLocation, useParams } from "react-router-dom";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { BadgePlus } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 import { getPageTitle } from "../../utils/getPageTitle";
-import Cards from "../../components/common/cards";
 import Button from "../../components/common/button";
 import Datatable from "../../components/common/datatable";
+import SearchItem from "../../components/common/searchItem";
+import Pagination, { usePagination } from "../../components/common/pagination";
 import { useViewSubscriptionPlansQuery } from "../../hooks/subscriptionPlans/subscriptionPlan";
 import { useSubscriptionStore } from "../../hooks/subscriptionPlans/createSubscription";
+import { useSubscriptionUpdate } from "../../hooks/subscriptionPlans/updateSubscription";
 import SubscriptionModal from "../../components/modal/subscriptionModal";
-import { useViewSingleSubscription } from "../../hooks/subscriptionPlans/viewsinglesubscription";
+import { resolveBillingCycle } from "../../utils/resolveBillingCycle";
+import { getPlanLabel } from "../../utils/planLabel";
+
+const emptyForm = {
+  plan: "",
+  ownerType: "company",
+  ownerId: "",
+  status: "active",
+  paymentStatus: "pending",
+  billingCycle: "monthly",
+  startDate: "",
+  endDate: "",
+  trialEndDate: "",
+  replaceExisting: false,
+  PlanHistory: [],
+};
+
+const withBillingCycle = (item) => ({
+  ...item,
+  billingCycle: resolveBillingCycle(item) || item?.billingCycle || "",
+});
 
 const SubscriptionPlans = () => {
-  const subscriptionMutation = useSubscriptionStore();
-  const singleviewsubscription = useViewSingleSubscription();
-  const { id } = useParams();
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [modalMode, setModalMode] = React.useState("add"); // 'add' or 'edit'
   const location = useLocation();
-  const planRef = React.useRef();
+  const navigate = useNavigate();
+  const subscriptionMutation = useSubscriptionStore();
+  const subscriptionUpdateMutation = useSubscriptionUpdate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState("add");
+  const [subscriptionPlans, setSubscriptionPlans] = useState([]);
+  const [filteredPlans, setFilteredPlans] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [formData, setFormData] = useState(emptyForm);
 
   const {
-    data: singleSubscriptionData,
-    isLoading: isSingleLoading,
-    isError: isSingleError,
-  } = useViewSingleSubscription(id);
-
-  const singlesubscription = singleSubscriptionData?.data || {};
-
-  console.log("Single subscription data from API:", singleSubscriptionData);
-
-  const {
-    data: subscriptionPlansData,
+    data: subscriptionPlansData = [],
     isLoading,
     isError,
+    refetch,
   } = useViewSubscriptionPlansQuery();
 
   useEffect(() => {
-    if (subscriptionPlansData) {
-      setSubscriptionPlans(
-        Array.isArray(subscriptionPlansData)
-          ? subscriptionPlansData
-          : subscriptionPlansData.data,
-      );
-    }
+    const list = Array.isArray(subscriptionPlansData)
+      ? subscriptionPlansData.map(withBillingCycle)
+      : [];
+    setSubscriptionPlans(list);
   }, [subscriptionPlansData]);
 
-  const [formData, setFormData] = React.useState({
-    plan: "",
-    ownerType: "",
-    ownerId: "",
-    // isTrial: "",
-    billingCycle: "",
-    status: "",
-    paymentId: "",
-    paymentStatus: "",
-  });
+  const rows = useMemo(
+    () => (isSearching ? filteredPlans : subscriptionPlans),
+    [isSearching, filteredPlans, subscriptionPlans],
+  );
 
-  const [subscriptionPlans, setSubscriptionPlans] = React.useState([]);
-
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error loading subscription plans</div>;
-
-  const subscription = [
-    {
-      id: "1",
-      icon: <BellRing />,
-      value: 500,
-      title: "Total Subscriptions",
-    },
-    {
-      id: "2",
-      icon: <ShieldCheck />,
-      value: 270,
-      title: "Active Subscriptions",
-    },
-    {
-      id: "3",
-      icon: <Shell />,
-      value: 6,
-      title: "Trial Subscriptions",
-    },
-  ];
+  const { currentPage, currentItems, totalPages, handlePageChange } =
+    usePagination(rows, 15);
 
   const columns = [
     {
       key: "plan",
       label: "Plan",
-      render: (plan) => (plan && plan.name ? plan.name : ""),
+      render: (plan) => getPlanLabel(plan) || "—",
     },
     {
       key: "ownerType",
@@ -98,72 +84,146 @@ const SubscriptionPlans = () => {
     },
     {
       key: "ownerId",
-      label: "Owner ID",
+      label: "Owner",
       render: (ownerId) =>
         typeof ownerId === "object" && ownerId !== null
-          ? ownerId.name || JSON.stringify(ownerId)
+          ? ownerId.name || ownerId.email || JSON.stringify(ownerId)
           : ownerId,
     },
-
-    // { key: "isTrial", label: "Is Trial" },
-    { key: "billingCycle", label: "Billing Cycle" },
     { key: "status", label: "Status" },
-    { key: "paymentId", label: "Payment ID" },
     { key: "paymentStatus", label: "Payment Status" },
+    {
+      key: "billingCycle",
+      label: "Billing Cycle",
+      render: (_value, row) => resolveBillingCycle(row) || "—",
+    },
   ];
 
-  // Actions for the 3-dot menu
-  const actions = [{ type: "view" }, { type: "edit" }, { type: "delete" }];
+  const actions = [{ type: "" }, { type: "edit" }, { type: "delete" }];
 
-  // Handler for dropdown actions
   const handleAction = ({ type, id, rowData }) => {
+    const subscriptionId = id || rowData?._id || rowData?.id;
+
     if (type === "view") {
-    } else if (type === "edit") {
+      if (!subscriptionId) {
+        toast.error("Subscription id not found");
+        return;
+      }
+      navigate(`/subscription-plans/${subscriptionId}`);
+      return;
+    }
+
+    if (type === "edit") {
       setModalMode("edit");
-      setFormData(rowData);
+      setFormData({
+        plan: rowData.plan?._id || rowData.plan || "",
+        ownerType: rowData.ownerType || "company",
+        ownerId: rowData.ownerId?._id || rowData.ownerId || "",
+        status: rowData.status || "active",
+        paymentStatus: rowData.paymentStatus || "pending",
+        billingCycle: resolveBillingCycle(rowData) || "monthly",
+        startDate: rowData.startDate || "",
+        endDate: rowData.endDate || "",
+        trialEndDate: rowData.trialEndDate || "",
+        replaceExisting: false,
+        PlanHistory: rowData.PlanHistory || [],
+      });
       setIsModalOpen(true);
-    } else if (type === "delete") {
+      return;
+    }
+
+    if (type === "delete") {
+      if (!subscriptionId) {
+        toast.error("Subscription id not found");
+        return;
+      }
+
+      Swal.fire({
+        title: "Cancel this subscription?",
+        text: "Status will be set to cancelled.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, cancel it",
+      }).then((result) => {
+        if (!result.isConfirmed) return;
+
+        subscriptionUpdateMutation.mutate(
+          { id: subscriptionId, body: { status: "cancelled" } },
+          {
+            onSuccess: () => {
+              toast.success("Subscription cancelled");
+              refetch();
+            },
+            onError: (err) => {
+              toast.error(
+                err.response?.data?.message ||
+                  "Failed to cancel subscription",
+              );
+            },
+          },
+        );
+      });
     }
   };
 
   const handleAddPackage = () => {
     setModalMode("add");
-    setFormData({
-      plan: "",
-      ownerType: "",
-      ownerId: "",
-      subOwnerId: "",
-      // isTrial: "",
-      billingCycle: "",
-      status: "",
-      paymentId: "",
-      paymentStatus: "",
-    });
+    setFormData({ ...emptyForm });
     setIsModalOpen(true);
   };
 
-  // Handler for saving a new subscription
   const handleSaveSubscription = (payload) => {
-    setIsModalOpen(false);
-
     subscriptionMutation.mutate(payload, {
-      onSuccess: (res) => {
-        setSubscriptionPlans((prev) => [
-          ...prev,
-          res?.data || { ...payload, id: Date.now() },
-        ]);
+      onSuccess: async (res) => {
+        const created = withBillingCycle({
+          ...(res?.data || {}),
+          billingCycle:
+            res?.data?.billingCycle || payload.billingCycle || "monthly",
+          startDate: res?.data?.startDate || payload.startDate,
+          endDate: res?.data?.endDate || payload.endDate,
+        });
+        toast.success(res?.message || "Subscription created successfully");
+        setIsModalOpen(false);
+        setFormData({ ...emptyForm });
+        setIsSearching(false);
+
+        if (created?._id || created?.id) {
+          setSubscriptionPlans((prev) => {
+            const createdId = created._id || created.id;
+            const withoutDup = prev.filter(
+              (item) => (item._id || item.id) !== createdId,
+            );
+            return [created, ...withoutDup];
+          });
+        }
+
+        await refetch();
+      },
+      onError: (err) => {
+        toast.error(
+          err.response?.data?.message || "Failed to create subscription",
+        );
       },
     });
   };
+
+  const handleSearchResults = useCallback(({ filteredData, searchItem }) => {
+    setFilteredPlans(
+      Array.isArray(filteredData) ? filteredData.map(withBillingCycle) : [],
+    );
+    setIsSearching(Boolean(searchItem?.trim()?.length));
+  }, []);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error loading subscription plans</div>;
 
   return (
     <>
       <div className="companies-page">
         <div className="page-header">
           <h1 className="page-title">{getPageTitle(location.pathname)}</h1>
-          {/* <p style={{ color: "rgb(85, 85, 85)", fontSize: "13px" }}>
-            Manage your subscription and billing
-          </p> */}
         </div>
         <div
           style={{
@@ -178,23 +238,50 @@ const SubscriptionPlans = () => {
           </Button>
         </div>
       </div>
-      <Cards cardsData={subscription} hideMenu={true}></Cards>
-      <Datatable
+
+      <SearchItem
         data={subscriptionPlans}
+        searchField={[
+          "billingCycle",
+          "status",
+          "paymentStatus",
+          "ownerType",
+        ]}
+        placeholder="Search subscriptions..."
+        onResultsChange={handleSearchResults}
+      />
+
+      <Datatable
+        data={currentItems}
         columns={columns}
         actions={actions}
         onAction={handleAction}
       />
+
+      {rows.length > 0 && (
+        <div className="activity-pagination">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+          <span>
+            Showing {currentItems.length} of {rows.length} subscriptions
+          </span>
+        </div>
+      )}
+
       <SubscriptionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         formData={formData}
         setFormData={setFormData}
         mode={modalMode}
-        isLoading={subscriptionMutation.isLoading}
+        isLoading={subscriptionMutation.isPending}
         onSave={handleSaveSubscription}
       />
     </>
   );
 };
+
 export default SubscriptionPlans;

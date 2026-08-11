@@ -5,9 +5,12 @@ export const useViewPlanQuery = () => {
   return useQuery({
     queryKey: ["viewpackage"],
     queryFn: async () => {
-      console.log("View Plan request body:");
       const res = await api.get("/plan/all");
-      return res.data;
+      const payload = res.data;
+      if (Array.isArray(payload)) return payload;
+      if (Array.isArray(payload?.data)) return payload.data;
+      if (Array.isArray(payload?.plans)) return payload.plans;
+      return [];
     },
   });
 };

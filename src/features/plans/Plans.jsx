@@ -73,7 +73,7 @@ const PlanData = () => {
             }}
           />
           <span style={{ marginLeft: "8px", marginRight: "20px" }}>
-            switch to yearly
+            {isYearly ? "Yearly plans" : "Monthly plans"}
           </span>
           <Button onClick={handleAddPackage}>
             <BadgePlus size={18} />
@@ -91,14 +91,14 @@ const PlanData = () => {
         ref={planRef}
         data={
           !isLoading && !isError
-            ? (isYearly
-                ? plan.filter((p) => {
-                    if (Array.isArray(p.pricing) && p.pricing[0]) {
-                      return p.pricing[0].billingCycle === "yearly";
-                    }
-                    return false;
-                  })
-                : plan)
+            ? plan.filter((p) => {
+                const pricingRows = Array.isArray(p.pricing) ? p.pricing : [];
+                const wanted = isYearly ? "yearly" : "monthly";
+                if (pricingRows.length === 0) return !isYearly;
+                return pricingRows.some(
+                  (row) => (row?.billingCycle || "monthly") === wanted
+                );
+              })
             : []
         }
         onRefresh={refetch}

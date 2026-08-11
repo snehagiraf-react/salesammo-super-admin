@@ -73,17 +73,30 @@ P, textarea, input{
   font-size: 14px;
   font-family: "Montserrat", sans-serif;
   background-color: #e6dfdf38;
+  color: #1f2937;
   transition: border-color 0.3s ease;
 }
 
 .products-search-input::placeholder {
-  color: #999;
+  color: #6b7280;
+  opacity: 1;
 }
 
 .products-search-input:focus {
   outline: none;
   border-color: #5c308d;
   box-shadow: 0 0 0 3px rgba(92, 48, 141, 0.1);
+}
+
+html.dark .products-search-input {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #f3f4f6;
+}
+
+html.dark .products-search-input::placeholder {
+  color: #9ca3af;
+  opacity: 1;
 }
 
 h1,h2, h3,h4, label, span, p, button, input, select, textarea {
