@@ -42,7 +42,7 @@ const CompanyData = ({ data = [] }) => {
   ];
 
   // Define available actions
-  const actions = [{ type: "view" }, { type: "edit" }, { type: "disable" }];
+  const actions = [{ type: "view" }, ];
 
   const handleTableAction = (actionData) => {
     const { type, id, rowData } = actionData;

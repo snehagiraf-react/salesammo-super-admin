@@ -6,6 +6,7 @@ import { useForgotPasswordMutation } from "../../hooks/auth/forgotPassword";
 import { useLoginMutation } from "../../hooks/auth/login";
 import api from "../../services/api";
 import { AuthContext } from "../../features/auth/AuthProvider";
+import { extractLoginUser } from "../../utils/authUser";
 
 const ForgotPasswordModal = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
@@ -68,9 +69,11 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
       try {
         const response = await loginMutation.mutateAsync({ email, password: newPassword });
         if (response?.success && response?.data?.accessToken && response?.data?.refreshToken) {
+          const user = extractLoginUser(response.data, email);
           await login({
             accessToken: response.data.accessToken,
             refreshToken: response.data.refreshToken,
+            user,
           });
           toast.success("Logged in with new password!");
         }

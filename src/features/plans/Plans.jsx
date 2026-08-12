@@ -66,7 +66,7 @@ const PlanData = () => {
             alignItems: "center",
           }}
         >
-          <Toggle
+          {/* <Toggle
             checked={isYearly}
             onChange={(checked) => {
               setIsYearly(checked);
@@ -74,7 +74,8 @@ const PlanData = () => {
           />
           <span style={{ marginLeft: "8px", marginRight: "20px" }}>
             {isYearly ? "Yearly plans" : "Monthly plans"}
-          </span>
+          </span> */}
+          
           <Button onClick={handleAddPackage}>
             <BadgePlus size={18} />
             Add Packages

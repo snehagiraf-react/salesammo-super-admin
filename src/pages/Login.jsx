@@ -4,11 +4,11 @@ import { useContext } from 'react';
 import loginimage from '../assets/images/logo.png'
 import '../assets/styles/login.css'
 import { Link } from 'react-router-dom';
-import { useAuth } from '../features/auth/AuthProvider';
-import { AuthContext } from '../features/auth/AuthProvider';    
+import { AuthContext } from '../features/auth/AuthProvider';
 import { toast } from 'react-hot-toast';
 import {useLoginMutation} from '../hooks/auth/login';
 import ForgotPasswordModal from '../components/modal/forgotPassword';
+import { extractLoginUser } from '../utils/authUser';
 
 
 const Login = () => {
@@ -45,9 +45,11 @@ const Login = () => {
       });
       response && console.log('Login response:', response);
       if (response?.success && response?.data?.accessToken && response?.data?.refreshToken) {
+        const user = extractLoginUser(response.data, email.trim());
         await login({
           accessToken: response.data.accessToken,
           refreshToken: response.data.refreshToken,
+          user,
         });
         toast.success('Login successful!');
         navigate('/dashboard');

@@ -53,6 +53,7 @@ api.interceptors.response.use(
     if (status === 401 && !isAuthRoute) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
+      localStorage.removeItem("user");
       redirectToLogin();
     }
     return Promise.reject(error);
