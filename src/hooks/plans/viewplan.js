@@ -14,3 +14,12 @@ export const useViewPlanQuery = () => {
     },
   });
 };
+
+export const fetchPlanById = async (planId) => {
+  const res = await api.get(`/plan/get/${planId}`);
+  const payload = res.data;
+  if (payload?.data && typeof payload.data === "object" && !Array.isArray(payload.data)) {
+    return payload.data;
+  }
+  return payload;
+};

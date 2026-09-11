@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { Trash2 } from "lucide-react";
 import Modal from "../common/modal";
 import "../../assets/styles/modal.css";
+import { PLAN_LIMIT_FIELDS, buildPlanLimitsPayload } from "../../utils/planLimitsForm";
 
 const PackageModal = ({
   isOpen,
   onClose,
-  formData,
+  formData = {},
   setFormData,
   mode = "edit",
   onSave,
@@ -74,17 +75,15 @@ const PackageModal = ({
   const handleSave = () => {
     if (!validate()) return;
 
+    const limitPayload = buildPlanLimitsPayload(formData.limits);
+
     const payload = {
       name: formData.name.trim(),
       description: formData.description || "",
       code: formData.code.trim(),
-      // Backend enum: trial | paid
       type: formData.type,
       features: (formData.features || []).filter((f) => String(f).trim() !== ""),
-      limits: {
-        maxUsers: Number(formData.limits?.maxUsers) || 0,
-        storageSpaceInGB: Number(formData.limits?.storageSpaceInGB) || 0,
-      },
+      ...limitPayload,
       pricing: [
         {
           price: Number(formData.price),
@@ -230,32 +229,28 @@ const PackageModal = ({
               style={inputStyle("offerPrice")}
             />
           </div>
-          <div style={fieldWrap}>
-            <label style={labelStyle}>Max Users</label>
-            <input
-              type="number"
-              value={formData.limits?.maxUsers ?? ""}
-              placeholder="e.g., 10"
-              min="0"
-              onChange={(e) => handleLimitChange("maxUsers", e.target.value)}
-              style={inputStyle("maxUsers")}
-            />
-          </div>
+          <div style={fieldWrap} />
         </div>
 
-        <div className="package-form-row">
-          <div style={fieldWrap}>
-            <label style={labelStyle}>Storage (GB)</label>
-            <input
-              type="number"
-              value={formData.limits?.storageSpaceInGB ?? ""}
-              placeholder="e.g., 5"
-              min="0"
-              onChange={(e) => handleLimitChange("storageSpaceInGB", e.target.value)}
-              style={inputStyle("storageSpaceInGB")}
-            />
+        <div style={{ ...fieldWrap, marginBottom: "8px" }}>
+          <label style={{ ...labelStyle, fontSize: "13px", marginBottom: "10px" }}>
+            Plan Limits
+          </label>
+          <div className="package-form-row">
+            {PLAN_LIMIT_FIELDS.map((field) => (
+              <div key={field.key} style={fieldWrap}>
+                <label style={labelStyle}>{field.label}</label>
+                <input
+                  type="number"
+                  value={formData.limits?.[field.key] ?? ""}
+                  placeholder={field.placeholder}
+                  min="0"
+                  onChange={(e) => handleLimitChange(field.key, e.target.value)}
+                  style={inputStyle(field.key)}
+                />
+              </div>
+            ))}
           </div>
-          <div style={fieldWrap} />
         </div>
 
         <div style={fieldWrap}>

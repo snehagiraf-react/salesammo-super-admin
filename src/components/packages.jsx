@@ -4,8 +4,10 @@ import PackageModal from "../components/modal/packageModal";
 import { usePackageStore } from "../hooks/plans/addplans";
 import { usePlanUpdate } from "../hooks/plans/update";
 import { useRemovePlan } from "../hooks/plans/deleteplan";
+import { fetchPlanById } from "../hooks/plans/viewplan";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import { hydratePlanLimits } from "../utils/planLimitsForm";
 
 
 const Packages = forwardRef((props, ref) => {
@@ -13,8 +15,9 @@ const Packages = forwardRef((props, ref) => {
   const [modalMode, setModalMode] = useState("edit");
   const planDeleteMutation = useRemovePlan();
   const [openMenuId, setOpenMenuId] = React.useState(null);
+  const [isLoadingPlan, setIsLoadingPlan] = useState(false);
 
-  const emptyForm = {
+  const createEmptyForm = () => ({
     name: "",
     description: "",
     code: "",
@@ -23,14 +26,11 @@ const Packages = forwardRef((props, ref) => {
     pricingType: "company",
     price: "",
     offerPrice: "",
-    limits: {
-      maxUsers: "",
-      storageSpaceInGB: "",
-    },
+    limits: hydratePlanLimits({}),
     features: [""],
-  };
+  });
 
-  const [formData, setFormData] = useState(emptyForm);
+  const [formData, setFormData] = useState(createEmptyForm);
 
 
   const subcripPlans = props.data || [];
@@ -38,9 +38,8 @@ const Packages = forwardRef((props, ref) => {
   const updatePackageMutation = usePlanUpdate();
   const [editingPlanId, setEditingPlanId] = useState(null);
 
-  const handleEdit = (plan) => {
+  const mapPlanToForm = (plan) => {
     const pricing = plan.pricing?.[0] || {};
-    // Map legacy "free" values to current backend enum
     const planType =
       plan.type === "free" ? "trial" : plan.type === "trial" || plan.type === "paid" ? plan.type : "";
     const pricingType =
@@ -52,9 +51,7 @@ const Packages = forwardRef((props, ref) => {
         ? pricing.billingCycle
         : "monthly";
 
-    setModalMode("edit");
-    setEditingPlanId(plan._id || plan.id);
-    setFormData({
+    return {
       name: plan.name || "",
       description: plan.description || "",
       code: plan.code || "",
@@ -63,16 +60,35 @@ const Packages = forwardRef((props, ref) => {
       pricingType,
       price: pricing.price ?? "",
       offerPrice: pricing.offerPrice ?? "",
-      limits: {
-        maxUsers: plan.limits?.maxUsers ?? "",
-        storageSpaceInGB: plan.limits?.storageSpaceInGB ?? "",
-      },
+      limits: hydratePlanLimits(plan.limits),
       features:
         (plan.features || []).filter((f) => typeof f === "string").length > 0
           ? (plan.features || []).filter((f) => typeof f === "string")
           : [""],
-    });
+    };
+  };
+
+  const handleEdit = async (plan) => {
+    const planId = plan._id || plan.id;
+    setModalMode("edit");
+    setEditingPlanId(planId);
+    setFormData(mapPlanToForm(plan));
     setIsModalOpen(true);
+
+    if (!planId) return;
+
+    setIsLoadingPlan(true);
+    try {
+      const freshPlan = await fetchPlanById(planId);
+      if (freshPlan) {
+        setFormData(mapPlanToForm(freshPlan));
+      }
+    } catch (err) {
+      console.error("Failed to load latest plan limits:", err);
+      toast.error("Could not refresh plan details; showing cached values");
+    } finally {
+      setIsLoadingPlan(false);
+    }
   };
 
   const handleDelete = (planId) => {
@@ -108,7 +124,7 @@ const Packages = forwardRef((props, ref) => {
 
   const handleAddNew = () => {
     setModalMode("add");
-    setFormData({ ...emptyForm });
+    setFormData(createEmptyForm());
     setEditingPlanId(null);
     setIsModalOpen(true);
   };
@@ -118,7 +134,7 @@ const Packages = forwardRef((props, ref) => {
   }));
 
   const resetForm = () => {
-    setFormData({ ...emptyForm });
+    setFormData(createEmptyForm());
     setEditingPlanId(null);
   };
 
@@ -361,13 +377,19 @@ const Packages = forwardRef((props, ref) => {
         ))}
       </div>
       <PackageModal
+        key={`${modalMode}-${editingPlanId || "new"}`}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         formData={formData}
         setFormData={setFormData}
         mode={modalMode}
         onSave={handleSave}
-        isLoading={modalMode === 'add' ? addPackageMutation.isPending : updatePackageMutation.isPending}
+        isLoading={
+          isLoadingPlan ||
+          (modalMode === "add"
+            ? addPackageMutation.isPending
+            : updatePackageMutation.isPending)
+        }
       />
     </>
   );
