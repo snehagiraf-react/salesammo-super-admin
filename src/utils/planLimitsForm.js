@@ -7,7 +7,7 @@ export const PLAN_LIMIT_FIELDS = [
   { key: "maxProductImageSizeMB", label: "Max Product Image Size (MB)", placeholder: "e.g., 5" },
   { key: "maxProductVideoSizeMB", label: "Max Product Video Size (MB)", placeholder: "e.g., 50" },
   { key: "maxProductCatalogSizeMB", label: "Max Product Catalogue Size (MB)", placeholder: "e.g., 20" },
-  { key: "maxApplicationImages", label: "Max Application Images (upload & approve)", placeholder: "e.g., 10" },
+  { key: "maxApplicationImages", label: "Max Images Per Application", placeholder: "e.g., 10" },
   { key: "maxCaseStudies", label: "Max Case Studies", placeholder: "e.g., 10" },
   { key: "maxCaseStudyAttachments", label: "Max Case Study Attachments", placeholder: "e.g., 10" },
   { key: "storageSpaceInGB", label: "Storage (GB)", placeholder: "e.g., 5" },
