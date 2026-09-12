@@ -4,7 +4,6 @@ import PackageModal from "../components/modal/packageModal";
 import { usePackageStore } from "../hooks/plans/addplans";
 import { usePlanUpdate } from "../hooks/plans/update";
 import { useRemovePlan } from "../hooks/plans/deleteplan";
-import { fetchPlanById } from "../hooks/plans/viewplan";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import { hydratePlanLimits } from "../utils/planLimitsForm";
@@ -15,7 +14,6 @@ const Packages = forwardRef((props, ref) => {
   const [modalMode, setModalMode] = useState("edit");
   const planDeleteMutation = useRemovePlan();
   const [openMenuId, setOpenMenuId] = React.useState(null);
-  const [isLoadingPlan, setIsLoadingPlan] = useState(false);
 
   const createEmptyForm = () => ({
     name: "",
@@ -68,27 +66,12 @@ const Packages = forwardRef((props, ref) => {
     };
   };
 
-  const handleEdit = async (plan) => {
+  const handleEdit = (plan) => {
     const planId = plan._id || plan.id;
     setModalMode("edit");
     setEditingPlanId(planId);
     setFormData(mapPlanToForm(plan));
     setIsModalOpen(true);
-
-    if (!planId) return;
-
-    setIsLoadingPlan(true);
-    try {
-      const freshPlan = await fetchPlanById(planId);
-      if (freshPlan) {
-        setFormData(mapPlanToForm(freshPlan));
-      }
-    } catch (err) {
-      console.error("Failed to load latest plan limits:", err);
-      toast.error("Could not refresh plan details; showing cached values");
-    } finally {
-      setIsLoadingPlan(false);
-    }
   };
 
   const handleDelete = (planId) => {
@@ -345,11 +328,22 @@ const Packages = forwardRef((props, ref) => {
                     margin: "0",
                   }}
                 >
-                  {plan.limits.maxUsers}
-
-                  {/* {plan.limits
-                  ? `Users: ${plan.limits.maxUsers}, Storage: ${plan.limits.storageSpaceInGB}GB`
-                  : "N/A"} */}
+                  {plan.limits?.maxUsers ?? "—"}
+                </p>
+              </div>
+              <div className="footer-sect">
+                <h6 className="company-email" style={{ margin: "10px 0" }}>
+                  Products Limit
+                </h6>
+                <p
+                  style={{
+                    fontSize: "14px",
+                    color: "#222222e2",
+                    fontWeight: "600",
+                    margin: "0",
+                  }}
+                >
+                  {plan.limits?.maxProducts ?? "—"}
                 </p>
               </div>
               <div className="footer-sect">
@@ -364,10 +358,7 @@ const Packages = forwardRef((props, ref) => {
                     margin: "0",
                   }}
                 >
-                  {plan.limits.storageSpaceInGB} GB
-                  {/* {plan.limits
-                  ? `Users: ${plan.limits.maxUsers}, Storage: ${plan.limits.storageSpaceInGB}GB`
-                  : "N/A"} */}
+                  {plan.limits?.storageSpaceInGB ?? "—"} GB
                 </p>
               </div>
             </footer>
@@ -385,10 +376,9 @@ const Packages = forwardRef((props, ref) => {
         mode={modalMode}
         onSave={handleSave}
         isLoading={
-          isLoadingPlan ||
-          (modalMode === "add"
+          modalMode === "add"
             ? addPackageMutation.isPending
-            : updatePackageMutation.isPending)
+            : updatePackageMutation.isPending
         }
       />
     </>

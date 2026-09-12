@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import Modal from "../common/modal";
 import "../../assets/styles/modal.css";
@@ -14,6 +14,13 @@ const PackageModal = ({
   isLoading = false,
 }) => {
   const [errors, setErrors] = useState({});
+  const [limitValues, setLimitValues] = useState({});
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setLimitValues({ ...(formData.limits || {}) });
+    setErrors({});
+  }, [isOpen]);
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
@@ -26,6 +33,10 @@ const PackageModal = ({
   };
 
   const handleLimitChange = (field, value) => {
+    setLimitValues((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
     setFormData((prev) => ({
       ...prev,
       limits: {
@@ -75,7 +86,7 @@ const PackageModal = ({
   const handleSave = () => {
     if (!validate()) return;
 
-    const limitPayload = buildPlanLimitsPayload(formData.limits);
+    const limitPayload = buildPlanLimitsPayload(limitValues);
 
     const payload = {
       name: formData.name.trim(),
@@ -241,11 +252,19 @@ const PackageModal = ({
               <div key={field.key} style={fieldWrap}>
                 <label style={labelStyle}>{field.label}</label>
                 <input
-                  type="number"
-                  value={formData.limits?.[field.key] ?? ""}
+                  type="text"
+                  inputMode="numeric"
+                  value={
+                    limitValues[field.key] === undefined ||
+                    limitValues[field.key] === null
+                      ? ""
+                      : String(limitValues[field.key])
+                  }
                   placeholder={field.placeholder}
-                  min="0"
-                  onChange={(e) => handleLimitChange(field.key, e.target.value)}
+                  onChange={(e) => {
+                    const next = e.target.value.replace(/[^\d]/g, "");
+                    handleLimitChange(field.key, next);
+                  }}
                   style={inputStyle(field.key)}
                 />
               </div>
