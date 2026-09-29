@@ -85,7 +85,9 @@ const Companies = () => {
       },
       onError: (err) => {
         toast.error(
-          err.response?.data?.message || "Failed to create company",
+          err.response?.data?.message ||
+            err.message ||
+            "Failed to create company",
         );
       },
     });

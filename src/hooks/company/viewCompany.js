@@ -23,10 +23,13 @@ export const useCompanyStore = () => {
       const isFormData = body instanceof FormData;
 
       const config = isFormData
-        ? { headers: { "Content-Type": "multipart/form-data" } }
+        ? { headers: { "Content-Type": null } }
         : {};
 
-      const res = await api.post("/company/create", body, config);
+      const res = await api.post("/company/create", body, {
+        ...config,
+        timeout: 30000,
+      });
       return res.data;
     },
     onSuccess: () => {
